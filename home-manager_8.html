@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f4f3ef;--surface:#ffffff;--surface2:#eeece6;--surface3:#e5e2da;
+  --border:#dedad2;--border2:#c9c4bb;
+  --text:#18161200;--text:#181612;--text2:#6b6560;--text3:#a09b94;
+  --green:#1e7a4a;--green-bg:#e8f5ee;--green-mid:#a8d9bc;
+  --amber:#b55a08;--amber-bg:#fef2e4;--amber-mid:#f9c97a;
+  --red:#b83232;--red-bg:#fdeaea;--red-mid:#f4a8a8;
+  --blue:#1854a0;--blue-bg:#e8f0fb;
+  --purple:#5b3d8a;--purple-bg:#f0ebf8;
+  --teal:#0d6b6b;--teal-bg:#e4f3f3;
+  --accent:#1e7a4a;
+  --r:14px;--rsm:9px;--rxs:5px;
+  --sh:0 1px 3px rgba(0,0,0,.05),0 1px 2px rgba(0,0,0,.03);
+  --shmd:0 4px 16px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.04);
+  --shlg:0 12px 40px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;min-height:100vh}
+h1,h2,h3{font-family:'Playfair Display',serif;font-weight:400}
+button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ── LOADING OVERLAY ── */
+#loading-overlay{position:fixed;inset:0;background:#1a1a18;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s}
+#loading-overlay.hide{opacity:0;pointer-events:none}
+.loading-logo{font-family:'Playfair Display',serif;font-size:36px;color:#fff;margin-bottom:8px}
+.loading-logo span{color:#4ade80}
+.loading-sub{color:#6b6b68;font-size:13px;margin-bottom:32px}
+.spinner{width:36px;height:36px;border:3px solid #2a2a28;border-top-color:#4ade80;border-radius:50%;animation:spin .7s linear infinite}
+.loading-msg{color:#4b4b48;font-size:12px;margin-top:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#0f0f0d 0%,#1a2e1e 50%,#0f0f0d 100%);position:relative;overflow:hidden}
+#login-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 25%,rgba(30,122,74,.18) 0%,transparent 55%),radial-gradient(ellipse at 75% 75%,rgba(30,122,74,.1) 0%,transparent 50%)}
+.login-box{background:var(--surface);border-radius:22px;padding:48px 40px;width:440px;max-width:95vw;position:relative;z-index:1;box-shadow:var(--shlg)}
+.login-logo{text-align:center;margin-bottom:36px}
+.login-icon{width:60px;height:60px;background:linear-gradient(135deg,#1e7a4a,#2da464);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;box-shadow:0 4px 12px rgba(30,122,74,.3)}
+.login-logo h1{font-size:30px;margin-bottom:4px}
+.login-logo p{color:var(--text2);font-size:13px}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.profile-btn{padding:18px 12px;border:2px solid var(--border);border-radius:var(--r);background:var(--surface);cursor:pointer;transition:all .2s;text-align:center}
+.profile-btn:hover{border-color:var(--accent);background:var(--green-bg);transform:translateY(-1px)}
+.profile-btn.selected{border-color:var(--accent);background:var(--green-bg);box-shadow:0 0 0 3px rgba(30,122,74,.12)}
+.p-avatar{width:48px;height:48px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.p-name{font-weight:600;font-size:14px}
+.p-role{font-size:11px;color:var(--text2);margin-top:2px}
+.fgroup{margin-bottom:18px}
+.fgroup label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.fgroup input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:14px;background:var(--bg);color:var(--text);outline:none;transition:border-color .2s}
+.fgroup input:focus{border-color:var(--accent);background:var(--surface)}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,#1e7a4a,#2da464);color:#fff;border:none;border-radius:var(--rsm);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px;letter-spacing:.01em}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(30,122,74,.35)}
+.login-hint{text-align:center;font-size:11px;color:var(--text3);margin-top:18px}
+
+/* ── APP SHELL ── */
+#app{display:none;flex-direction:column;min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.topbar-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--text);display:flex;align-items:center;gap:10px}
+.topbar-logo .logo-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#1e7a4a,#2da464)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.sync-indicator{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--surface2)}
+.sync-indicator.syncing{color:var(--amber)}
+.sync-indicator.ok{color:var(--green)}
+.sync-indicator.err{color:var(--red)}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.sync-dot.pulse{animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.cur-toggle{display:flex;background:var(--surface2);border-radius:20px;padding:3px;gap:2px}
+.cur-btn{padding:4px 12px;border-radius:16px;border:none;background:transparent;font-size:12px;font-weight:600;cursor:pointer;color:var(--text2);transition:all .2s}
+.cur-btn.active{background:var(--surface);color:var(--text);box-shadow:var(--sh)}
+.notif-wrap{position:relative}
+.notif-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:background .2s;position:relative}
+.notif-btn:hover{background:var(--bg)}
+.nbadge{position:absolute;top:-2px;right:-2px;width:17px;height:17px;background:var(--red);color:#fff;border-radius:50%;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;border:2px solid var(--surface)}
+.notif-panel{position:fixed;top:68px;right:16px;width:360px;max-height:440px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shlg);z-index:300;display:none;overflow:hidden}
+.notif-panel.open{display:block}
+.notif-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.notif-head h3{font-size:15px;font-weight:600}
+.notif-clear{font-size:12px;color:var(--accent);cursor:pointer;background:none;border:none;font-weight:500}
+.notif-list{overflow-y:auto;max-height:380px}
+.nitem{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;gap:10px;cursor:default}
+.nitem:last-child{border-bottom:none}
+.nitem.unread{background:var(--green-bg)}
+.ndot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.ntext{font-size:13px;line-height:1.4}
+.ntime{font-size:11px;color:var(--text3);margin-top:3px}
+.user-chip{display:flex;align-items:center;gap:8px;padding:5px 14px 5px 5px;border:1px solid var(--border);border-radius:24px;background:var(--surface);cursor:default}
+.chip-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+.chip-name{font-size:13px;font-weight:600}
+.chip-role{font-size:10px;color:var(--text3)}
+.logout-btn{padding:5px 12px;border:1px solid var(--border);border-radius:var(--rxs);background:transparent;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* ── SIDEBAR + NAV ── */
+.app-body{display:flex;flex:1;min-height:0}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:20px 12px;display:flex;flex-direction:column;gap:2px;flex-shrink:0;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.sidebar-section{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:10px 10px 6px;margin-top:8px}
+.sidebar-section:first-child{margin-top:0}
+.nav-item{padding:9px 12px;border:none;background:none;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;border-radius:var(--rsm);display:flex;align-items:center;gap:9px;transition:all .15s;width:100%;text-align:left}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--green-bg);color:var(--green);font-weight:600}
+.nav-item .ni{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;padding:1px 6px;margin-left:auto}
+
+/* ── CONTENT ── */
+.content{flex:1;padding:28px 32px;overflow-y:auto;max-width:1000px}
+.section{display:none;animation:fadeIn .2s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SEC HEADER ── */
+.sec-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
+.sec-header h2{font-size:26px}
+.sec-header .sub{font-size:13px;color:var(--text2);margin-top:3px}
+.sec-actions{display:flex;gap:8px;align-items:center;flex-shrink:0;margin-left:16px}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+
+/* ── METRIC CARDS ── */
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.metric.m-green::before{background:linear-gradient(90deg,#1e7a4a,#2da464)}
+.metric.m-amber::before{background:linear-gradient(90deg,#b55a08,#e8830a)}
+.metric.m-red::before{background:linear-gradient(90deg,#b83232,#e05252)}
+.metric.m-blue::before{background:linear-gradient(90deg,#1854a0,#2e78d4)}
+.metric-label{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.metric-value{font-family:'Playfair Display',serif;font-size:30px;color:var(--text);line-height:1}
+.metric-value.green{color:var(--green)}
+.metric-value.red{color:var(--red)}
+.metric-value.amber{color:var(--amber)}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:16px}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface)}
+.card-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:7px}
+.card-body{padding:18px 20px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.01em}
+.b-red{background:var(--red-bg);color:var(--red)}
+.b-amber{background:var(--amber-bg);color:var(--amber)}
+.b-green{background:var(--green-bg);color:var(--green)}
+.b-gray{background:var(--surface2);color:var(--text2)}
+.b-blue{background:var(--blue-bg);color:var(--blue)}
+.b-purple{background:var(--purple-bg);color:var(--purple)}
+.tag{display:inline-block;padding:2px 8px;border-radius:var(--rxs);font-size:11px;background:var(--surface2);color:var(--text2);font-weight:500}
+
+/* ── ROWS ── */
+.irow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.irow:last-child{border-bottom:none}
+.irow:hover{background:transparent}
+.iname{font-weight:600;font-size:14px}
+.idetail{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* ── BUTTONS ── */
+.btn{padding:8px 16px;border-radius:var(--rsm);border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;color:var(--text)}
+.btn:hover{background:var(--bg);border-color:var(--border2)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--text);color:#fff;border-color:var(--text)}
+.btn-primary:hover{background:var(--accent);border-color:var(--accent)}
+.btn-success{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-success:hover{background:#165c38;border-color:#165c38}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px}
+.btn-danger{border-color:var(--red-mid);color:var(--red)}
+.btn-danger:hover{background:var(--red-bg)}
+.btn-icon{width:30px;height:30px;padding:0;justify-content:center;border-radius:7px}
+
+/* ── FORMS ── */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.ffield{margin-bottom:14px}
+.ffield label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.ffield input,.ffield select,.ffield textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13px;background:var(--bg);color:var(--text);outline:none;transition:border-color .2s}
+.ffield input:focus,.ffield select:focus,.ffield textarea:focus{border-color:var(--accent);background:var(--surface)}
+.factions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);box-shadow:var(--shlg);width:500px;max-width:100%;max-height:90vh;overflow-y:auto}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-header h3{font-size:20px}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3);width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:background .15s}
+.modal-close:hover{background:var(--surface2);color:var(--text)}
+.modal-body{padding:24px}
+
+/* ── EXPIRY TABLE ── */
+.etable{width:100%;border-collapse:collapse}
+.etable th{text-align:left;padding:9px 14px;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:var(--bg);white-space:nowrap}
+.etable td{padding:12px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.etable tr:last-child td{border-bottom:none}
+.etable tbody tr:hover td{background:var(--bg)}
+.etable .act{opacity:0;transition:opacity .15s}
+.etable tbody tr:hover .act{opacity:1}
+
+/* ── SHOPPING ── */
+.shop-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.shop-item:last-child{border-bottom:none}
+.cbox{width:20px;height:20px;border-radius:5px;border:2px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.cbox.checked{background:var(--green);border-color:var(--green);color:#fff;font-size:12px}
+.shop-text{flex:1;min-width:0}
+.shop-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shop-name.done{text-decoration:line-through;color:var(--text3)}
+.shop-meta{font-size:12px;color:var(--text2);margin-top:1px}
+
+/* ── MEAL WEEK GRID ── */
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:4px 0 16px}
+.day-col{text-align:center;cursor:pointer}
+.day-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:5px;letter-spacing:.04em}
+.day-num{width:34px;height:34px;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;transition:all .2s;border:2px solid transparent}
+.day-num:hover{background:var(--surface2)}
+.day-num.today{background:var(--accent);color:#fff}
+.day-num.selected:not(.today){border-color:var(--accent);color:var(--green)}
+.day-mdot{width:5px;height:5px;border-radius:50%;background:var(--green-mid);margin:0 auto}
+
+/* ── MEAL SLOTS ── */
+.meal-slot{padding:11px 0;border-bottom:1px solid var(--border)}
+.meal-slot:last-child{border-bottom:none}
+.meal-time-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.meal-time{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
+.meal-name{font-size:14px;font-weight:600}
+.meal-kcal{font-size:12px;color:var(--text2);margin-top:2px}
+.meal-warning{background:var(--amber-bg);border:1px solid var(--amber-mid);border-radius:var(--rxs);padding:5px 10px;margin-top:6px;font-size:11px;color:var(--amber);display:flex;align-items:center;gap:6px}
+
+/* ── CONSUMPTION ── */
+.con-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.con-item:last-child{border-bottom:none}
+.con-label{width:90px;font-weight:600;font-size:13px;flex-shrink:0}
+.con-bar-wrap{flex:1;height:7px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.con-bar{height:100%;border-radius:4px;background:var(--green)}
+.con-val{font-size:12px;color:var(--text2);min-width:70px;text-align:right}
+
+/* ── BILLS ── */
+.bill-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.bill-row:last-child{border-bottom:none}
+.bill-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bill-info{flex:1;min-width:0}
+.bill-name{font-weight:600;font-size:14px}
+.bill-meta{font-size:12px;color:var(--text2);margin-top:1px}
+.bill-right{text-align:right;flex-shrink:0}
+.bill-usd{font-weight:700;font-size:15px}
+.bill-lbp{font-size:11px;color:var(--text3);margin-top:1px}
+.bill-status{font-size:11px;font-weight:600;margin-top:2px}
+.s-paid{color:var(--green)}.s-due{color:var(--amber)}.s-overdue{color:var(--red)}
+
+/* ── BUDGET BAR ── */
+.bbar-wrap{margin-bottom:22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh)}
+.bbar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.bbar-title{font-size:13px;font-weight:600}
+.bbar-pct{font-size:22px;font-family:'Playfair Display',serif}
+.bbar{height:12px;background:var(--surface2);border-radius:6px;overflow:hidden}
+.bbar-fill{height:100%;border-radius:6px;transition:width .5s}
+.bbar-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:6px}
+
+/* ── MAINTENANCE ROWS ── */
+.mrow{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--border)}
+.mrow:last-child{border-bottom:none}
+.micon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--surface2)}
+.minfo{flex:1;min-width:0}
+.mname{font-weight:600;font-size:14px}
+.mdetail{font-size:12px;color:var(--text2);margin-top:2px}
+
+/* ── CALENDAR ── */
+.fcal{width:100%;border-collapse:collapse}
+.fcal th{padding:9px;font-size:11px;font-weight:700;text-align:center;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);background:var(--bg)}
+.fcal td{padding:6px;text-align:center;vertical-align:top;border:1px solid var(--border);width:calc(100%/7);min-height:56px}
+.cnum{font-size:12px;font-weight:600;margin-bottom:3px}
+.cnum.today{width:24px;height:24px;background:var(--accent);color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.cevent{font-size:10px;border-radius:3px;padding:2px 5px;margin-top:2px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cevent.green{background:var(--green-bg);color:var(--green)}
+.cevent.blue{background:var(--blue-bg);color:var(--blue)}
+.cevent.amber{background:var(--amber-bg);color:var(--amber)}
+.cevent.purple{background:var(--purple-bg);color:var(--purple)}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;top:72px;right:20px;z-index:700;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--text);color:#fff;padding:12px 16px;border-radius:var(--rsm);font-size:13px;max-width:320px;box-shadow:var(--shlg);display:flex;align-items:center;gap:10px;animation:tin .3s ease;pointer-events:auto;border-left:4px solid transparent}
+.toast.success{background:#fff;color:var(--green);border-left-color:var(--green);box-shadow:var(--shlg)}
+.toast.error{background:#fff;color:var(--red);border-left-color:var(--red);box-shadow:var(--shlg)}
+.toast.warning{background:#fff;color:var(--amber);border-left-color:var(--amber);box-shadow:var(--shlg)}
+.toast.info{background:#fff;color:var(--blue);border-left-color:var(--blue);box-shadow:var(--shlg)}
+@keyframes tin{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes tout{from{opacity:1}to{opacity:0}}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:36px 20px;color:var(--text3)}
+.empty .ei{font-size:36px;margin-bottom:12px}
+.empty p{font-size:13px}
+
+/* ── SEARCH BAR ── */
+.search-bar{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.search-bar input{flex:1;padding:9px 13px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13px;background:var(--surface);outline:none;transition:border-color .2s}
+.search-bar input:focus{border-color:var(--accent)}
+.search-bar select{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13px;background:var(--surface);color:var(--text);outline:none}
+
+/* ── PROGRESS ── */
+.prog-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;border-radius:4px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .content{padding:16px}
+  .frow{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="loading-logo">Home<span>Manager</span></div>
+  <div class="loading-sub">Your household, organised</div>
+  <div class="spinner"></div>
+  <div class="loading-msg" id="loading-msg">Connecting to Google Sheets…</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-icon">🏠</div>
+      <h1>Home Manager</h1>
+      <p>Your household, organised</p>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px">Who's signing in?</div>
+    <div class="profile-grid">
+      <button class="profile-btn selected" id="pb-husband" onclick="selectProfile('husband')">
+        <div class="p-avatar" style="background:#dbeafe">👨</div>
+        <div class="p-name">Husband</div>
+        <div class="p-role">Head of household</div>
+      </button>
+      <button class="profile-btn" id="pb-wife" onclick="selectProfile('wife')">
+        <div class="p-avatar" style="background:#fce7f3">👩</div>
+        <div class="p-name">Wife</div>
+        <div class="p-role">Co-manager</div>
+      </button>
+    </div>
+    <div class="fgroup">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Sign in →</button>
+    <div class="login-hint">Husband: <strong>1234</strong> &nbsp;·&nbsp; Wife: <strong>5678</strong></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-dot"></div>
+      HomeManager
+    </div>
+    <div class="topbar-right">
+      <div class="sync-indicator" id="sync-indicator">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span id="sync-text">Connecting…</span>
+      </div>
+      <button class="btn btn-sm" onclick="refreshData()" id="refresh-btn" title="Reload all data from Google Sheets" style="font-size:12px;padding:5px 10px">&#x21BB; Refresh</button>
+      <div class="cur-toggle">
+        <button class="cur-btn active" id="cur-usd" onclick="setCurrency('USD')">USD</button>
+        <button class="cur-btn" id="cur-lbp" onclick="setCurrency('LBP')">LBP</button>
+      </div>
+      <div class="notif-wrap">
+        <button class="notif-btn" onclick="toggleNotif()">🔔<div class="nbadge" id="nbadge">0</div></button>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-head"><h3>Notifications</h3><button class="notif-clear" onclick="clearNotifs()">Mark all read</button></div>
+          <div class="notif-list" id="notif-list"></div>
+        </div>
+      </div>
+      <div class="user-chip">
+        <div class="chip-av" id="chip-av"></div>
+        <div><div class="chip-name" id="chip-name"></div><div class="chip-role" id="chip-role"></div></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-section">Main</div>
+      <button class="nav-item active" onclick="switchTab('overview')"><span class="ni">📊</span>Overview</button>
+      <div class="sidebar-section">Food</div>
+      <button class="nav-item" onclick="switchTab('expiry')"><span class="ni">📅</span>Expiry Dates<span class="nav-badge" id="nb-expiry" style="display:none">0</span></button>
+      <button class="nav-item" onclick="switchTab('shopping')"><span class="ni">🛒</span>Shopping List<span class="nav-badge" id="nb-shopping" style="display:none">0</span></button>
+      <button class="nav-item" onclick="switchTab('meals')"><span class="ni">🍽️</span>Meal Planner</button>
+      <div class="sidebar-section">Finance</div>
+      <button class="nav-item" onclick="switchTab('bills')"><span class="ni">💳</span>Bills & Expenses<span class="nav-badge" id="nb-bills" style="display:none">0</span></button>
+      <div class="sidebar-section">Home</div>
+      <button class="nav-item" onclick="switchTab('appliances')"><span class="ni">🔧</span>Appliances</button>
+      <button class="nav-item" onclick="switchTab('meds')"><span class="ni">💊</span>Medications</button>
+      <button class="nav-item" onclick="switchTab('calendar')"><span class="ni">🗓️</span>Family Calendar</button>
+      <div class="sidebar-section">System</div>
+      <button class="nav-item" onclick="switchTab('settings')"><span class="ni">⚙️</span>Settings & Sync</button>
+    </nav>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <div class="section active" id="tab-overview">
+        <div class="sec-header">
+          <div><h2 id="ov-greet">Good morning</h2><p class="sub" id="ov-date"></p></div>
+        </div>
+        <div class="g4">
+          <div class="metric m-amber"><div class="metric-label">⚠️ Expiring Soon</div><div class="metric-value amber" id="ov-exp">0</div><div class="metric-sub">within 7 days</div></div>
+          <div class="metric m-blue"><div class="metric-label">🛒 Shopping Needed</div><div class="metric-value" id="ov-shop">0</div><div class="metric-sub">pending items</div></div>
+          <div class="metric m-red"><div class="metric-label">💳 Unpaid Bills</div><div class="metric-value red" id="ov-bills">0</div><div class="metric-sub" id="ov-bills-sub">this month</div></div>
+          <div class="metric m-green"><div class="metric-label">🔔 Active Alerts</div><div class="metric-value green" id="ov-alerts">0</div><div class="metric-sub">need attention</div></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">⚠️ Expiring items</span><button class="btn btn-sm" onclick="switchTab('expiry')">View all →</button></div>
+            <div class="card-body" id="ov-exp-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">🍽️ Today's meals</span><button class="btn btn-sm" onclick="switchTab('meals')">Manage →</button></div>
+            <div class="card-body" id="ov-meals-list"></div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">💳 Upcoming bills</span><button class="btn btn-sm" onclick="switchTab('bills')">View all →</button></div>
+            <div class="card-body" id="ov-bills-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">🛒 Shopping needed</span><button class="btn btn-sm" onclick="switchTab('shopping')">View all →</button></div>
+            <div class="card-body" id="ov-shop-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPIRY -->
+      <div class="section" id="tab-expiry">
+        <div class="sec-header">
+          <div><h2>Expiry Dates</h2><p class="sub">Track all food and product expiry dates</p></div>
+          <div class="sec-actions"><button class="btn btn-primary" onclick="openModal('m-expiry')">+ Add Product</button></div>
+        </div>
+        <div class="g3">
+          <div class="metric m-red"><div class="metric-label">🔴 Expired / Urgent</div><div class="metric-value red" id="ex-urgent">0</div></div>
+          <div class="metric m-amber"><div class="metric-label">🟡 Expiring This Week</div><div class="metric-value amber" id="ex-week">0</div></div>
+          <div class="metric m-green"><div class="metric-label">✅ Total Tracked</div><div class="metric-value green" id="ex-total">0</div></div>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="ex-search" placeholder="Search products…" oninput="renderExpiry()">
+          <select id="ex-filter" onchange="renderExpiry()"><option value="all">All categories</option><option>Dairy</option><option>Meat</option><option>Produce</option><option>Drinks</option><option>Pantry</option><option>Frozen</option><option>Medicine</option><option>Other</option></select>
+          <select id="ex-sort" onchange="renderExpiry()"><option value="expiry">By expiry date</option><option value="name">By name</option><option value="cat">By category</option></select>
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0">
+            <table class="etable"><thead><tr><th>Product</th><th>Category</th><th>Location</th><th>Expires</th><th>Status</th><th></th></tr></thead>
+            <tbody id="ex-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOPPING -->
+      <div class="section" id="tab-shopping">
+        <div class="sec-header">
+          <div><h2>Shopping List</h2><p class="sub">Items needed for the household</p></div>
+          <div class="sec-actions"><button class="btn btn-primary" onclick="openModal('m-shopping')">+ Add Item</button></div>
+        </div>
+        <div class="g3">
+          <div class="metric m-red"><div class="metric-label">🔴 Urgent</div><div class="metric-value red" id="sh-urg">0</div></div>
+          <div class="metric m-blue"><div class="metric-label">📋 Total Items</div><div class="metric-value" id="sh-tot">0</div></div>
+          <div class="metric m-green"><div class="metric-label">✅ Checked Off</div><div class="metric-value green" id="sh-done">0</div></div>
+        </div>
+        <div id="sh-urg-card" class="card" style="display:none">
+          <div class="card-header"><span class="card-title">🔴 Urgent — Buy Now</span></div>
+          <div class="card-body" id="sh-list-urg"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">📋 Regular Items</span></div>
+          <div class="card-body" id="sh-list-reg"></div>
+        </div>
+        <div id="sh-nice-card" class="card" style="display:none">
+          <div class="card-header"><span class="card-title">✨ Nice to Have</span></div>
+          <div class="card-body" id="sh-list-nice"></div>
+        </div>
+      </div>
+
+      <!-- MEALS -->
+      <div class="section" id="tab-meals">
+        <div class="sec-header">
+          <div><h2>Meal Planner</h2><p class="sub">Plan meals and track daily food consumption</p></div>
+          <div class="sec-actions"><button class="btn btn-primary" onclick="openModal('m-meal')">+ Add Meal</button></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📅 This Week</span></div>
+            <div class="card-body">
+              <div class="week-grid" id="week-grid"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title" id="meal-day-label">🍽️ Today's Meals</span></div>
+            <div class="card-body" id="today-meals"></div>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📊 Daily Consumption</span><button class="btn btn-sm" onclick="openModal('m-con')">+ Log Item</button></div>
+            <div class="card-body" id="con-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">🔥 Calories Today</span></div>
+            <div class="card-body">
+              <div style="text-align:center;padding:16px 0">
+                <div style="font-family:'Playfair Display',serif;font-size:52px;color:var(--accent);line-height:1" id="cal-total">0</div>
+                <div style="font-size:13px;color:var(--text2);margin-top:4px">kcal logged</div>
+                <div style="margin-top:20px;text-align:left">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span style="font-weight:600">Daily target</span><span id="cal-pct" style="color:var(--text2)">0%</span></div>
+                  <div class="prog-bar"><div class="prog-fill" id="cal-bar" style="width:0%;background:var(--green)"></div></div>
+                  <div style="font-size:11px;color:var(--text3);margin-top:4px">Target: 2,000 kcal</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BILLS -->
+      <div class="section" id="tab-bills">
+        <div class="sec-header">
+          <div><h2>Bills & Expenses</h2><p class="sub">Track all household spending</p></div>
+          <div class="sec-actions"><button class="btn btn-primary" onclick="openModal('m-bill')">+ Add Bill</button></div>
+        </div>
+        <div class="g4">
+          <div class="metric m-blue"><div class="metric-label">💰 Total This Month</div><div class="metric-value" id="bi-total">$0</div></div>
+          <div class="metric m-green"><div class="metric-label">🍎 Food Spending</div><div class="metric-value green" id="bi-food">$0</div></div>
+          <div class="metric m-amber"><div class="metric-label">⚡ Utilities</div><div class="metric-value amber" id="bi-util">$0</div></div>
+          <div class="metric m-red"><div class="metric-label">📋 Unpaid Bills</div><div class="metric-value red" id="bi-unpaid">0</div></div>
+        </div>
+        <div class="bbar-wrap">
+          <div class="bbar-head"><span class="bbar-title">Monthly Budget Usage</span><span class="bbar-pct" id="bbar-pct">0%</span></div>
+          <div class="bbar"><div class="bbar-fill" id="bbar-fill" style="width:0%;background:var(--green)"></div></div>
+          <div class="bbar-foot"><span id="bbar-spent">$0 spent</span><span>Budget: $2,000</span></div>
+        </div>
+        <div class="g2">
+          <div class="card">
+            <div class="card-header"><span class="card-title">🔄 Recurring Bills</span></div>
+            <div class="card-body" id="bi-recurring"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">🛒 Food & Shopping</span></div>
+            <div class="card-body" id="bi-food-list"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">📋 All Expenses This Month</span></div>
+          <div class="card-body" id="bi-all"></div>
+        </div>
+      </div>
+
+      <!-- APPLIANCES -->
+      <div class="section" id="tab-appliances">
+        <div class="sec-header">
+          <div><h2>Appliance Maintenance</h2><p class="sub">Track servicing and maintenance schedules</p></div>
+          <div class="sec-actions"><button class="btn btn-primary" onclick="openModal('m-appliance')">+ Add Appliance</button></div>
+        </div>
+        <div class="card"><div class="card-body" id="ap-list"></div></div>
+      </div>
+
+      <!-- MEDICATIONS -->
+      <div class="section" id="tab-meds">
+        <div class="sec-header">
+          <div><h2>Medications</h2><p class="sub">Track prescriptions, dosages and refill dates</p></div>
+          <div class="sec-actions"><button class="btn btn-primary" onclick="openModal('m-med')">+ Add Medication</button></div>
+        </div>
+        <div class="card"><div class="card-body" id="med-list"></div></div>
+      </div>
+
+      <!-- CALENDAR -->
+      <div class="section" id="tab-calendar">
+        <div class="sec-header">
+          <div><h2>Family Calendar</h2><p class="sub">Household events and reminders</p></div>
+          <div class="sec-actions">
+            <button class="btn btn-sm" onclick="changeMonth(-1)">← Prev</button>
+            <span id="cal-month-lbl" style="font-weight:600;font-size:14px;padding:0 8px"></span>
+            <button class="btn btn-sm" onclick="changeMonth(1)">Next →</button>
+            <button class="btn btn-primary" onclick="openModal('m-event')">+ Add Event</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body" style="overflow-x:auto;padding:12px">
+            <table class="fcal"><thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr></thead>
+            <tbody id="cal-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS & SYNC -->
+      <div class="section" id="tab-settings">
+        <div class="sec-header">
+          <div><h2>Settings &amp; Sync</h2><p class="sub">Connection status, diagnostics and preferences</p></div>
+          <div class="sec-actions">
+            <button class="btn btn-primary" onclick="refreshData()">&#x21BB; Refresh all data</button>
+          </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><span class="card-title">🔌 Google Sheets connection</span></div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+              <div id="diag-dot" style="width:12px;height:12px;border-radius:50%;background:var(--text3);flex-shrink:0"></div>
+              <div>
+                <div style="font-weight:600;font-size:14px" id="diag-status">Not tested yet</div>
+                <div style="font-size:12px;color:var(--text2);margin-top:2px" id="diag-detail">Click "Test connection" to check</div>
+              </div>
+              <button class="btn btn-sm" onclick="testConnection()" id="test-btn" style="margin-left:auto">Test connection</button>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--rsm);padding:12px;font-size:12px;color:var(--text2)">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span>API URL</span>
+                <span style="font-family:monospace;font-size:11px;color:var(--text3);word-break:break-all;text-align:right;max-width:70%" id="diag-url"></span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span>Last sync</span><span id="diag-lastsync" style="color:var(--text3)">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>Records loaded</span><span id="diag-records" style="color:var(--text3)">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data counts per sheet -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><span class="card-title">📊 Data in each sheet</span></div>
+          <div class="card-body" id="diag-sheet-counts"></div>
+        </div>
+
+        <!-- Raw API test -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><span class="card-title">🧪 Raw API response</span></div>
+          <div class="card-body">
+            <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+              <button class="btn btn-sm" onclick="rawTest('ping')">ping</button>
+              <button class="btn btn-sm" onclick="rawTest('getAll')">getAll</button>
+              <button class="btn btn-sm" onclick="rawTest('init')">init sheets</button>
+            </div>
+            <pre id="diag-raw" style="background:var(--bg);border-radius:var(--rsm);padding:12px;font-size:11px;font-family:monospace;overflow-x:auto;white-space:pre-wrap;max-height:300px;overflow-y:auto;color:var(--text2)">Click a button above to test…</pre>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">⚙️ Preferences</span></div>
+          <div class="card-body">
+            <div class="irow">
+              <div><div class="iname">LBP Exchange Rate</div><div class="idetail">Used to convert USD amounts to LBP</div></div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <input type="number" id="lbp-rate-input" style="width:100px;padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13px;background:var(--bg)" value="89500">
+                <button class="btn btn-sm btn-primary" onclick="saveLBPRate()">Save</button>
+              </div>
+            </div>
+            <div class="irow">
+              <div><div class="iname">Monthly Budget</div><div class="idetail">Used for the budget progress bar in Bills</div></div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <input type="number" id="budget-input" style="width:100px;padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13px;background:var(--bg)" value="2000">
+                <button class="btn btn-sm btn-primary" onclick="saveBudget()">Save</button>
+              </div>
+            </div>
+            <div class="irow">
+              <div><div class="iname">Change passwords</div><div class="idetail">Husband: 1234 &nbsp;·&nbsp; Wife: 5678 (edit HTML to change)</div></div>
+              <span class="badge b-gray">In HTML file</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /app-body -->
+</div><!-- /app -->
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- ════════ MODALS ════════ -->
+
+<!-- Expiry -->
+<div class="modal-overlay" id="m-expiry">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Product</h3><button class="modal-close" onclick="closeModal('m-expiry')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="ffield"><label>Product name</label><input type="text" id="ep-name" placeholder="e.g. Whole milk"></div><div class="ffield"><label>Category</label><select id="ep-cat"><option>Dairy</option><option>Meat</option><option>Produce</option><option>Drinks</option><option>Pantry</option><option>Frozen</option><option>Medicine</option><option>Other</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Storage location</label><select id="ep-loc"><option>Fridge</option><option>Freezer</option><option>Pantry shelf</option><option>Cabinet</option><option>Counter</option></select></div><div class="ffield"><label>Expiry date</label><input type="date" id="ep-date"></div></div>
+      <div class="ffield"><label>Notes</label><input type="text" id="ep-notes" placeholder="Optional notes"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-expiry')">Cancel</button><button class="btn btn-primary" onclick="addExpiryItem()">Add product</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Shopping -->
+<div class="modal-overlay" id="m-shopping">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Shopping Item</h3><button class="modal-close" onclick="closeModal('m-shopping')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="ffield"><label>Item name</label><input type="text" id="si-name" placeholder="e.g. Eggs (x12)"></div><div class="ffield"><label>Priority</label><select id="si-priority"><option value="urgent">🔴 Urgent</option><option value="regular" selected>📋 Regular</option><option value="nice">✨ Nice to have</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Quantity / notes</label><input type="text" id="si-qty" placeholder="e.g. 2 packs"></div><div class="ffield"><label>Estimated cost (USD)</label><input type="number" id="si-cost" placeholder="0.00" step="0.01"></div></div>
+      <div class="ffield"><label>Reason / note</label><input type="text" id="si-note" placeholder="e.g. Running low"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-shopping')">Cancel</button><button class="btn btn-primary" onclick="addShoppingItem()">Add item</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Meal -->
+<div class="modal-overlay" id="m-meal">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Meal</h3><button class="modal-close" onclick="closeModal('m-meal')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="ffield"><label>Meal name</label><input type="text" id="ml-name" placeholder="e.g. Lentil soup"></div><div class="ffield"><label>Meal type</label><select id="ml-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Date</label><input type="date" id="ml-date"></div><div class="ffield"><label>Calories (kcal)</label><input type="number" id="ml-kcal" placeholder="e.g. 450"></div></div>
+      <div class="ffield"><label>Ingredients (comma-separated)</label><input type="text" id="ml-ingredients" placeholder="e.g. chicken, garlic, olive oil, lemon"></div>
+      <div class="ffield"><label>Notes</label><textarea id="ml-notes" rows="2" placeholder="Cooking notes or instructions"></textarea></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-meal')">Cancel</button><button class="btn btn-primary" onclick="addMeal()">Add meal</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Consumption -->
+<div class="modal-overlay" id="m-con">
+  <div class="modal">
+    <div class="modal-header"><h3>Log Consumption</h3><button class="modal-close" onclick="closeModal('m-con')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="ffield"><label>Item</label><input type="text" id="co-name" placeholder="e.g. Water, Milk, Bread"></div><div class="ffield"><label>Amount</label><input type="text" id="co-amount" placeholder="e.g. 1.5L, 3 slices"></div></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-con')">Cancel</button><button class="btn btn-primary" onclick="addConsumption()">Log</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Bill -->
+<div class="modal-overlay" id="m-bill">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Bill / Expense</h3><button class="modal-close" onclick="closeModal('m-bill')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="ffield"><label>Name</label><input type="text" id="bl-name" placeholder="e.g. Electricity, Groceries"></div><div class="ffield"><label>Category</label><select id="bl-cat"><option>Electricity</option><option>Water</option><option>Internet</option><option>Phone</option><option>Rent</option><option>Food / Groceries</option><option>Fuel</option><option>Health</option><option>Education</option><option>Entertainment</option><option>Other</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Amount (USD)</label><input type="number" id="bl-usd" placeholder="0.00" step="0.01" oninput="syncLBP()"></div><div class="ffield"><label>Amount (LBP)</label><input type="number" id="bl-lbp" placeholder="0" oninput="syncUSD()"></div></div>
+      <div class="frow"><div class="ffield"><label>Due date</label><input type="date" id="bl-due"></div><div class="ffield"><label>Recurring</label><select id="bl-recur"><option value="no">One-time</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option></select></div></div>
+      <div class="ffield"><label>Status</label><select id="bl-status"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-bill')">Cancel</button><button class="btn btn-primary" onclick="addBill()">Add bill</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Appliance -->
+<div class="modal-overlay" id="m-appliance">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Appliance</h3><button class="modal-close" onclick="closeModal('m-appliance')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="ffield"><label>Appliance name</label><input type="text" id="ap-name" placeholder="e.g. Washing machine"></div><div class="ffield"><label>Brand / model</label><input type="text" id="ap-brand" placeholder="e.g. Samsung WF45"></div></div>
+      <div class="frow"><div class="ffield"><label>Last service date</label><input type="date" id="ap-last"></div><div class="ffield"><label>Next service due</label><input type="date" id="ap-next"></div></div>
+      <div class="ffield"><label>Notes</label><input type="text" id="ap-notes" placeholder="e.g. Annual filter replacement"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-appliance')">Cancel</button><button class="btn btn-primary" onclick="addAppliance()">Add</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Medication -->
+<div class="modal-overlay" id="m-med">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Medication</h3><button class="modal-close" onclick="closeModal('m-med')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="ffield"><label>Medication name</label><input type="text" id="md-name" placeholder="e.g. Paracetamol 500mg"></div><div class="ffield"><label>For (person)</label><input type="text" id="md-person" placeholder="e.g. Wife, Husband, All"></div></div>
+      <div class="frow"><div class="ffield"><label>Dosage</label><input type="text" id="md-dose" placeholder="e.g. 1 tablet twice daily"></div><div class="ffield"><label>Refill date</label><input type="date" id="md-refill"></div></div>
+      <div class="ffield"><label>Notes</label><input type="text" id="md-notes" placeholder="e.g. Take with food"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-med')">Cancel</button><button class="btn btn-primary" onclick="addMed()">Add</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Event -->
+<div class="modal-overlay" id="m-event">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Event</h3><button class="modal-close" onclick="closeModal('m-event')">✕</button></div>
+    <div class="modal-body">
+      <div class="frow"><div class="ffield"><label>Event title</label><input type="text" id="ev-title" placeholder="e.g. Doctor appointment"></div><div class="ffield"><label>Category</label><select id="ev-cat"><option value="green">🏠 Home</option><option value="blue">👨‍👩‍👧 Family</option><option value="amber">💰 Finance</option><option value="purple">🏥 Health</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Date</label><input type="date" id="ev-date"></div><div class="ffield"><label>Time (optional)</label><input type="time" id="ev-time"></div></div>
+      <div class="ffield"><label>Notes</label><input type="text" id="ev-notes" placeholder="Additional details"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-event')">Cancel</button><button class="btn btn-primary" onclick="addEvent()">Add event</button></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ EDIT MODALS ════════ -->
+
+<!-- Edit Expiry -->
+<div class="modal-overlay" id="m-edit-expiry">
+  <div class="modal">
+    <div class="modal-header"><h3>Edit Product</h3><button class="modal-close" onclick="closeModal('m-edit-expiry')">&#x2715;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-ep-id">
+      <div class="frow"><div class="ffield"><label>Product name</label><input type="text" id="edit-ep-name"></div><div class="ffield"><label>Category</label><select id="edit-ep-cat"><option>Dairy</option><option>Meat</option><option>Produce</option><option>Drinks</option><option>Pantry</option><option>Frozen</option><option>Medicine</option><option>Other</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Storage location</label><select id="edit-ep-loc"><option>Fridge</option><option>Freezer</option><option>Pantry shelf</option><option>Cabinet</option><option>Counter</option></select></div><div class="ffield"><label>Expiry date</label><input type="date" id="edit-ep-date"></div></div>
+      <div class="ffield"><label>Notes</label><input type="text" id="edit-ep-notes"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-edit-expiry')">Cancel</button><button class="btn btn-primary" onclick="saveExpiry()">Save changes</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Shopping -->
+<div class="modal-overlay" id="m-edit-shopping">
+  <div class="modal">
+    <div class="modal-header"><h3>Edit Shopping Item</h3><button class="modal-close" onclick="closeModal('m-edit-shopping')">&#x2715;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-si-id">
+      <div class="frow"><div class="ffield"><label>Item name</label><input type="text" id="edit-si-name"></div><div class="ffield"><label>Priority</label><select id="edit-si-priority"><option value="urgent">&#x1F534; Urgent</option><option value="regular">&#x1F4CB; Regular</option><option value="nice">&#x2728; Nice to have</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Quantity / notes</label><input type="text" id="edit-si-qty"></div><div class="ffield"><label>Estimated cost (USD)</label><input type="number" id="edit-si-cost" step="0.01"></div></div>
+      <div class="ffield"><label>Reason / note</label><input type="text" id="edit-si-note"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-edit-shopping')">Cancel</button><button class="btn btn-primary" onclick="saveShopping()">Save changes</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Meal -->
+<div class="modal-overlay" id="m-edit-meal">
+  <div class="modal">
+    <div class="modal-header"><h3>Edit Meal</h3><button class="modal-close" onclick="closeModal('m-edit-meal')">&#x2715;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-ml-id">
+      <div class="frow"><div class="ffield"><label>Meal name</label><input type="text" id="edit-ml-name"></div><div class="ffield"><label>Meal type</label><select id="edit-ml-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Date</label><input type="date" id="edit-ml-date"></div><div class="ffield"><label>Calories (kcal)</label><input type="number" id="edit-ml-kcal"></div></div>
+      <div class="ffield"><label>Ingredients (comma-separated)</label><input type="text" id="edit-ml-ingredients"></div>
+      <div class="ffield"><label>Notes</label><textarea id="edit-ml-notes" rows="2"></textarea></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-edit-meal')">Cancel</button><button class="btn btn-primary" onclick="saveMeal()">Save changes</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Bill -->
+<div class="modal-overlay" id="m-edit-bill">
+  <div class="modal">
+    <div class="modal-header"><h3>Edit Bill / Expense</h3><button class="modal-close" onclick="closeModal('m-edit-bill')">&#x2715;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-bl-id">
+      <div class="frow"><div class="ffield"><label>Name</label><input type="text" id="edit-bl-name"></div><div class="ffield"><label>Category</label><select id="edit-bl-cat"><option>Electricity</option><option>Water</option><option>Internet</option><option>Phone</option><option>Rent</option><option>Food / Groceries</option><option>Fuel</option><option>Health</option><option>Education</option><option>Entertainment</option><option>Other</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Amount (USD)</label><input type="number" id="edit-bl-usd" step="0.01" oninput="editSyncLBP()"></div><div class="ffield"><label>Amount (LBP)</label><input type="number" id="edit-bl-lbp" oninput="editSyncUSD()"></div></div>
+      <div class="frow"><div class="ffield"><label>Due date</label><input type="date" id="edit-bl-due"></div><div class="ffield"><label>Recurring</label><select id="edit-bl-recur"><option value="no">One-time</option><option value="monthly">Monthly</option><option value="quarterly">Quarterly</option><option value="yearly">Yearly</option></select></div></div>
+      <div class="ffield"><label>Status</label><select id="edit-bl-status"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-edit-bill')">Cancel</button><button class="btn btn-primary" onclick="saveBill()">Save changes</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Appliance -->
+<div class="modal-overlay" id="m-edit-appliance">
+  <div class="modal">
+    <div class="modal-header"><h3>Edit Appliance</h3><button class="modal-close" onclick="closeModal('m-edit-appliance')">&#x2715;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-ap-id">
+      <div class="frow"><div class="ffield"><label>Appliance name</label><input type="text" id="edit-ap-name"></div><div class="ffield"><label>Brand / model</label><input type="text" id="edit-ap-brand"></div></div>
+      <div class="frow"><div class="ffield"><label>Last service date</label><input type="date" id="edit-ap-last"></div><div class="ffield"><label>Next service due</label><input type="date" id="edit-ap-next"></div></div>
+      <div class="ffield"><label>Notes</label><input type="text" id="edit-ap-notes"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-edit-appliance')">Cancel</button><button class="btn btn-primary" onclick="saveAppliance()">Save changes</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Medication -->
+<div class="modal-overlay" id="m-edit-med">
+  <div class="modal">
+    <div class="modal-header"><h3>Edit Medication</h3><button class="modal-close" onclick="closeModal('m-edit-med')">&#x2715;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-md-id">
+      <div class="frow"><div class="ffield"><label>Medication name</label><input type="text" id="edit-md-name"></div><div class="ffield"><label>For (person)</label><input type="text" id="edit-md-person"></div></div>
+      <div class="frow"><div class="ffield"><label>Dosage</label><input type="text" id="edit-md-dose"></div><div class="ffield"><label>Refill date</label><input type="date" id="edit-md-refill"></div></div>
+      <div class="ffield"><label>Notes</label><input type="text" id="edit-md-notes"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-edit-med')">Cancel</button><button class="btn btn-primary" onclick="saveMed()">Save changes</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Event -->
+<div class="modal-overlay" id="m-edit-event">
+  <div class="modal">
+    <div class="modal-header"><h3>Edit Event</h3><button class="modal-close" onclick="closeModal('m-edit-event')">&#x2715;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-ev-id">
+      <div class="frow"><div class="ffield"><label>Event title</label><input type="text" id="edit-ev-title"></div><div class="ffield"><label>Category</label><select id="edit-ev-cat"><option value="green">&#x1F3E0; Home</option><option value="blue">&#x1F46A; Family</option><option value="amber">&#x1F4B0; Finance</option><option value="purple">&#x1F3E5; Health</option></select></div></div>
+      <div class="frow"><div class="ffield"><label>Date</label><input type="date" id="edit-ev-date"></div><div class="ffield"><label>Time (optional)</label><input type="time" id="edit-ev-time"></div></div>
+      <div class="ffield"><label>Notes</label><input type="text" id="edit-ev-notes"></div>
+      <div class="factions"><button class="btn" onclick="closeModal('m-edit-event')">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save changes</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════
+const API = 'https://script.google.com/macros/s/AKfycbw0PPKZ3Ur5CWKy0ehkf5ZoMn20zgtCJI0eREItzdw1Tiakj-5SujM2pT_vj4y9FP9Nlw/exec';
+const LBP = 89500;
+const BUDGET = 2000;
+const USERS = {
+  husband: { name:'Husband', role:'Head of household', pass:'1234', bg:'#dbeafe', color:'#1a5fa8', emoji:'👨' },
+  wife:    { name:'Wife',    role:'Co-manager',        pass:'5678', bg:'#fce7f3', color:'#9d174d', emoji:'👩' }
+};
+const BILL_ICONS = { Electricity:'⚡',Water:'💧',Internet:'📡',Phone:'📱',Rent:'🏠','Food / Groceries':'🛒',Fuel:'⛽',Health:'🏥',Education:'📚',Entertainment:'🎬',Other:'📋' };
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentUser = null;
+let currency = 'USD';
+let calViewDate = new Date();
+let selectedMealDate = localToday();
+let nextId = 1000;
+let data = { expiry:[], shopping:[], meals:[], consumption:[], bills:[], appliances:[], medications:[], events:[], notifications:[] };
+
+function localToday() {
+  const t = new Date();
+  return t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate());
+}
+function pad(n){ return String(n).padStart(2,'0'); }
+function uid(){ return ++nextId; }
+
+// ══════════════════════════════════════════
+// GOOGLE SHEETS API
+// ══════════════════════════════════════════
+function setSyncState(state, msg) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  const ind = document.getElementById('sync-indicator');
+  ind.className = 'sync-indicator ' + state;
+  dot.className = 'sync-dot' + (state === 'syncing' ? ' pulse' : '');
+  txt.textContent = msg;
+}
+
+async function apiCall(params) {
+  const url = API + '?nocache=' + Date.now();
+  const resp = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(params),
+    headers: { 'Content-Type': 'text/plain' }
+  });
+  return resp.json();
+}
+
+async function loadAllData() {
+  setSyncState('syncing', 'Loading…');
+  try {
+    // Step 1: ensure all sheet tabs exist
+    await apiCall({ action:'init' });
+    // Step 2: fetch all data
+    const res = await apiCall({ action:'getAll' });
+    if (!res.ok || !res.data) {
+      setSyncState('ok', 'Ready (empty sheets)');
+      return true;
+    }
+    const SHEETS = ['expiry','shopping','meals','consumption','bills','appliances','medications','events'];
+    let totalRows = 0;
+    SHEETS.forEach(sheet => {
+      const rows = res.data[sheet];
+      if (!Array.isArray(rows)) return;
+      data[sheet] = rows.map(row => {
+        // id always number
+        if (row.id !== undefined) row.id = Number(row.id) || 0;
+        if (row.id > nextId) nextId = row.id;
+        // boolean: done
+        if ('done' in row) {
+          row.done = row.done === true || row.done === 'true' || row.done === 'TRUE' || row.done === 1 || row.done === '1';
+        }
+        // numbers
+        if ('usd'  in row) row.usd  = parseFloat(row.usd)  || 0;
+        if ('cost' in row) row.cost = parseFloat(row.cost) || 0;
+        if ('kcal' in row) row.kcal = parseInt(row.kcal)   || 0;
+        return row;
+      });
+      totalRows += rows.length;
+    });
+    setSyncState('ok', 'Synced ✓');
+    diagLastSync = new Date().toLocaleTimeString();
+    diagTotalRecords = totalRows;
+    showToast('Loaded '+totalRows+' records from Google Sheets','info');
+    return true;
+  } catch(e) {
+    console.error('loadAllData error:', e);
+    setSyncState('err', 'Offline — check connection');
+    showToast('Could not reach Google Sheets — running offline','warning');
+    return false;
+  }
+}
+
+async function refreshData() {
+  const btn = document.getElementById('refresh-btn');
+  btn.disabled = true;
+  btn.textContent = 'Loading…';
+  await loadAllData();
+  checkAutoNotifications();
+  renderAll();
+  btn.disabled = false;
+  btn.innerHTML = '&#x21BB; Refresh';
+}
+
+async function sheetAdd(sheetName, row) {
+  setSyncState('syncing', 'Saving…');
+  try {
+    await apiCall({ action:'add', sheet:sheetName, row });
+    setSyncState('ok', 'Saved ✓');
+  } catch(e) {
+    setSyncState('err', 'Save failed');
+    showToast('Failed to save to Google Sheets', 'error');
+  }
+}
+
+async function sheetUpdate(sheetName, row) {
+  setSyncState('syncing', 'Saving…');
+  try {
+    await apiCall({ action:'update', sheet:sheetName, row });
+    setSyncState('ok', 'Saved ✓');
+  } catch(e) { setSyncState('err', 'Save failed'); }
+}
+
+async function sheetDelete(sheetName, id) {
+  setSyncState('syncing', 'Deleting…');
+  try {
+    await apiCall({ action:'delete', sheet:sheetName, id });
+    setSyncState('ok', 'Deleted ✓');
+  } catch(e) { setSyncState('err', 'Delete failed'); }
+}
+
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+let selectedProfile = 'husband';
+
+function selectProfile(p) {
+  selectedProfile = p;
+  document.getElementById('pb-husband').classList.toggle('selected', p==='husband');
+  document.getElementById('pb-wife').classList.toggle('selected', p==='wife');
+}
+
+function doLogin() {
+  const pass = document.getElementById('login-pass').value;
+  const u = USERS[selectedProfile];
+  if (pass !== u.pass) { showToast('Incorrect password', 'error'); return; }
+  currentUser = { key:selectedProfile, ...u };
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.flexDirection = 'column';
+  setupUserUI();
+  setDefaultDates();
+  initApp();
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-pass').value = '';
+}
+
+function setupUserUI() {
+  const u = currentUser;
+  const av = document.getElementById('chip-av');
+  av.textContent = u.emoji; av.style.background = u.bg; av.style.color = u.color;
+  document.getElementById('chip-name').textContent = u.name;
+  document.getElementById('chip-role').textContent = u.role;
+}
+
+function setDefaultDates() {
+  const today = localToday();
+  ['ep-date','ml-date','bl-due','ap-last','ap-next','md-refill','ev-date'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = today;
+  });
+}
+
+async function initApp() {
+  const h = new Date().getHours();
+  const greet = h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('ov-greet').textContent = greet + ', ' + currentUser.name + ' 👋';
+  const opts = {weekday:'long',year:'numeric',month:'long',day:'numeric'};
+  document.getElementById('ov-date').textContent = new Date().toLocaleDateString('en-US', opts);
+
+  await loadAllData();
+  checkAutoNotifications();
+  renderAll();
+}
+
+function renderAll() {
+  renderOverview();
+  renderExpiry();
+  renderShopping();
+  renderMeals();
+  renderBills();
+  renderAppliances();
+  renderMeds();
+  renderCalendar();
+  renderNotifications();
+  updateNavBadges();
+}
+
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const tabs = ['overview','expiry','shopping','meals','bills','appliances','meds','calendar','settings'];
+  const idx = tabs.indexOf(name);
+  document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
+  if (name==='overview') renderOverview();
+  if (name==='settings') initSettingsPage();
+}
+
+function updateNavBadges() {
+  const expUrgent = data.expiry.filter(e=>daysDiff(e.date)<=2).length;
+  const shopUrgent = data.shopping.filter(s=>s.priority==='urgent'&&!s.done).length;
+  const unpaid = data.bills.filter(b=>b.status==='unpaid'&&daysDiff(b.due)<=7).length;
+  setBadge('nb-expiry', expUrgent);
+  setBadge('nb-shopping', shopUrgent);
+  setBadge('nb-bills', unpaid);
+}
+function setBadge(id, n) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.textContent = n; el.style.display = n>0 ? 'inline' : 'none';
+}
+
+// ══════════════════════════════════════════
+// CURRENCY
+// ══════════════════════════════════════════
+function setCurrency(c) {
+  currency = c;
+  document.getElementById('cur-usd').classList.toggle('active', c==='USD');
+  document.getElementById('cur-lbp').classList.toggle('active', c==='LBP');
+  renderBills(); renderOverview();
+}
+function fmtMoney(usd) {
+  const u = parseFloat(usd)||0;
+  const rate = typeof LBP_RATE_LIVE !== 'undefined' ? LBP_RATE_LIVE : LBP;
+  if (currency==='LBP') return Math.round(u*rate).toLocaleString()+' LBP';
+  return '$'+u.toFixed(2);
+}
+function syncLBP() { const v=parseFloat(document.getElementById('bl-usd').value)||0; document.getElementById('bl-lbp').value=Math.round(v*LBP); }
+function syncUSD() { const v=parseFloat(document.getElementById('bl-lbp').value)||0; document.getElementById('bl-usd').value=(v/LBP).toFixed(2); }
+
+// ══════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════
+function daysDiff(dateStr) {
+  if(!dateStr) return 999;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const t = new Date(dateStr+'T00:00:00');
+  return Math.round((t-today)/86400000);
+}
+function fmtDate(s) {
+  if(!s) return '—';
+  const d = new Date(s+'T00:00:00');
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+function expiryBadge(dateStr) {
+  const d = daysDiff(dateStr);
+  if(d<0) return '<span class="badge b-red">Expired</span>';
+  if(d<=2) return `<span class="badge b-red">${d}d left</span>`;
+  if(d<=7) return `<span class="badge b-amber">${d}d left</span>`;
+  return `<span class="badge b-green">${d}d left</span>`;
+}
+function getAddedBy() { return currentUser?.name||'me'; }
+function emptyState(icon, msg) { return `<div class="empty"><div class="ei">${icon}</div><p>${msg}</p></div>`; }
+
+// ══════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+// ══════════════════════════════════════════
+// TOASTS
+// ══════════════════════════════════════════
+function showToast(msg, type='success') {
+  const icons = {success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'};
+  const el = document.createElement('div');
+  el.className = 'toast '+type;
+  el.innerHTML = `<span>${icons[type]||'✅'}</span><span>${msg}</span>`;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(()=>{ el.style.animation='tout .3s forwards'; setTimeout(()=>el.remove(),300); },3200);
+}
+
+// ══════════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════════
+function toggleNotif() { document.getElementById('notif-panel').classList.toggle('open'); }
+document.addEventListener('click', e=>{ if(!e.target.closest('.notif-wrap')) document.getElementById('notif-panel').classList.remove('open'); });
+
+function renderNotifications() {
+  const unread = data.notifications.filter(n=>!n.read).length;
+  const badge = document.getElementById('nbadge');
+  badge.textContent = unread;
+  badge.style.display = unread>0 ? 'flex' : 'none';
+  const list = document.getElementById('notif-list');
+  list.innerHTML = data.notifications.length ? data.notifications.map(n=>`
+    <div class="nitem ${n.read?'':'unread'}">
+      <div class="ndot" style="background:${n.color}"></div>
+      <div><div class="ntext">${n.text}</div><div class="ntime">${n.time}</div></div>
+    </div>`).join('') : emptyState('🔔','No notifications');
+}
+
+function clearNotifs() { data.notifications.forEach(n=>n.read=true); renderNotifications(); }
+
+function addNotif(text, color='#1e7a4a') {
+  data.notifications.unshift({id:uid(),text,time:'Just now',color,read:false});
+  renderNotifications();
+}
+
+function checkAutoNotifications() {
+  data.expiry.forEach(e=>{
+    const d=daysDiff(e.date);
+    if(d>=0&&d<=2&&!data.notifications.find(n=>n.text.includes(e.name+' expires')))
+      addNotif(e.name+' expires in '+d+' day(s)!','#b83232');
+  });
+  data.bills.forEach(b=>{
+    const d=daysDiff(b.due);
+    if(b.status==='unpaid'&&d>=0&&d<=3&&!data.notifications.find(n=>n.text.includes(b.name+' bill due')))
+      addNotif(b.name+' bill due in '+d+' day(s) ('+fmtMoney(b.usd)+')','#b55a08');
+  });
+}
+
+// ══════════════════════════════════════════
+// OVERVIEW
+// ══════════════════════════════════════════
+function renderOverview() {
+  const expiring = data.expiry.filter(e=>daysDiff(e.date)<=7&&daysDiff(e.date)>=0);
+  const shopPending = data.shopping.filter(s=>!s.done);
+  const unpaidBills = data.bills.filter(b=>b.status==='unpaid');
+  const alerts = data.notifications.filter(n=>!n.read).length;
+
+  document.getElementById('ov-exp').textContent = expiring.length;
+  document.getElementById('ov-shop').textContent = shopPending.length;
+  document.getElementById('ov-bills').textContent = unpaidBills.length;
+  document.getElementById('ov-alerts').textContent = alerts;
+
+  // Expiry list
+  const sorted = [...data.expiry].sort((a,b)=>new Date(a.date)-new Date(b.date)).filter(e=>daysDiff(e.date)<=7).slice(0,5);
+  document.getElementById('ov-exp-list').innerHTML = sorted.length ? sorted.map(e=>`
+    <div class="irow"><div><div class="iname">${e.name}</div><div class="idetail">${e.cat} · ${e.loc}</div></div>${expiryBadge(e.date)}</div>`).join('') : emptyState('✅','No items expiring soon');
+
+  // Today meals
+  const todayMeals = data.meals.filter(m=>m.date===localToday());
+  const ml = document.getElementById('ov-meals-list');
+  ml.innerHTML = ['Breakfast','Lunch','Dinner'].map(t=>{
+    const m = todayMeals.find(x=>x.type===t);
+    return `<div class="irow"><div><div class="iname">${t}</div><div class="idetail">${m?m.name+' · '+m.kcal+' kcal':'—'}</div></div>${m?'<span class="badge b-green">Planned</span>':'<span class="badge b-gray">Not set</span>'}</div>`;
+  }).join('');
+
+  // Bills
+  const upcoming = [...data.bills].filter(b=>b.status==='unpaid').sort((a,b)=>new Date(a.due)-new Date(b.due)).slice(0,4);
+  document.getElementById('ov-bills-list').innerHTML = upcoming.length ? upcoming.map(b=>`
+    <div class="irow"><div><div class="iname">${b.name}</div><div class="idetail">Due ${fmtDate(b.due)}</div></div><span style="font-weight:700;color:var(--red)">${fmtMoney(b.usd)}</span></div>`).join('') : emptyState('💳','No upcoming bills');
+
+  // Shopping
+  const shopItems = data.shopping.filter(s=>!s.done).slice(0,5);
+  document.getElementById('ov-shop-list').innerHTML = shopItems.length ? shopItems.map(s=>`
+    <div class="irow"><div><div class="iname">${s.name}</div><div class="idetail">By: ${s.addedBy}</div></div><span class="badge ${s.priority==='urgent'?'b-red':s.priority==='nice'?'b-blue':'b-gray'}">${s.priority}</span></div>`).join('') : emptyState('🛒','Nothing needed');
+}
+
+// ══════════════════════════════════════════
+// EXPIRY
+// ══════════════════════════════════════════
+function renderExpiry() {
+  const search = (document.getElementById('ex-search')?.value||'').toLowerCase();
+  const filter = document.getElementById('ex-filter')?.value||'all';
+  const sort = document.getElementById('ex-sort')?.value||'expiry';
+  let items = data.expiry.filter(e=>{
+    if(filter!=='all'&&e.cat!==filter) return false;
+    if(search&&!e.name.toLowerCase().includes(search)&&!e.cat.toLowerCase().includes(search)) return false;
+    return true;
+  });
+  if(sort==='expiry') items.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  else if(sort==='name') items.sort((a,b)=>a.name.localeCompare(b.name));
+  else items.sort((a,b)=>a.cat.localeCompare(b.cat));
+
+  document.getElementById('ex-total').textContent = data.expiry.length;
+  document.getElementById('ex-urgent').textContent = data.expiry.filter(e=>daysDiff(e.date)<=2).length;
+  document.getElementById('ex-week').textContent = data.expiry.filter(e=>{const d=daysDiff(e.date);return d>2&&d<=7;}).length;
+
+  document.getElementById('ex-tbody').innerHTML = items.length ? items.map(e=>`
+    <tr>
+      <td><strong>${e.name}</strong>${e.notes?'<br><span style="font-size:11px;color:var(--text3)">'+e.notes+'</span>':''}</td>
+      <td><span class="tag">${e.cat}</span></td>
+      <td style="color:var(--text2)">${e.loc}</td>
+      <td style="color:var(--text2)">${fmtDate(e.date)}</td>
+      <td>${expiryBadge(e.date)}</td>
+      <td style="white-space:nowrap"><button class="btn btn-xs act" onclick="editExpiry(${e.id})" style="margin-right:4px">Edit</button><button class="btn btn-xs btn-danger act" onclick="delExpiry(${e.id})">Remove</button></td>
+    </tr>`).join('') : `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">No products found</td></tr>`;
+  updateNavBadges();
+}
+
+async function addExpiryItem() {
+  const name = document.getElementById('ep-name').value.trim();
+  if(!name){showToast('Please enter a product name','warning');return;}
+  const row = {id:uid(),name,cat:document.getElementById('ep-cat').value,loc:document.getElementById('ep-loc').value,date:document.getElementById('ep-date').value,notes:document.getElementById('ep-notes').value};
+  data.expiry.push(row);
+  closeModal('m-expiry');
+  ['ep-name','ep-notes'].forEach(id=>document.getElementById(id).value='');
+  renderExpiry(); renderOverview();
+  showToast(name+' added to expiry tracker');
+  await sheetAdd('expiry', row);
+}
+
+async function delExpiry(id) {
+  data.expiry = data.expiry.filter(e=>e.id!==id);
+  renderExpiry(); renderOverview();
+  showToast('Product removed');
+  await sheetDelete('expiry', id);
+}
+
+// SHOPPING
+function renderShopping() {
+  const urg = data.shopping.filter(s=>s.priority==='urgent');
+  const reg = data.shopping.filter(s=>s.priority==='regular');
+  const nice = data.shopping.filter(s=>s.priority==='nice');
+  document.getElementById('sh-urg').textContent = urg.filter(s=>!s.done).length;
+  document.getElementById('sh-tot').textContent = data.shopping.length;
+  document.getElementById('sh-done').textContent = data.shopping.filter(s=>s.done).length;
+  document.getElementById('sh-urg-card').style.display = urg.length?'block':'none';
+  document.getElementById('sh-nice-card').style.display = nice.length?'block':'none';
+  document.getElementById('sh-list-urg').innerHTML = shopRows(urg)||emptyState('✅','All urgent items done');
+  document.getElementById('sh-list-reg').innerHTML = shopRows(reg)||emptyState('🛒','No regular items');
+  document.getElementById('sh-list-nice').innerHTML = shopRows(nice);
+  updateNavBadges();
+}
+function shopRows(items) {
+  return items.map(s=>`
+    <div class="shop-item">
+      <div class="cbox ${s.done?'checked':''}" onclick="toggleShop(${s.id})">${s.done?'✓':''}</div>
+      <div class="shop-text">
+        <div class="shop-name ${s.done?'done':''}">${s.name}${s.qty?' <span style="font-weight:400;color:var(--text2)">· '+s.qty+'</span>':''}</div>
+        <div class="shop-meta">By ${s.addedBy}${s.note?' · '+s.note:''}${s.cost?' · Est: '+fmtMoney(s.cost):''}</div>
+      </div>
+      <div style="display:flex;gap:4px;flex-shrink:0"><button class="btn btn-xs" onclick="editShopping(${s.id})">Edit</button><button class="btn btn-xs btn-danger" onclick="delShop(${s.id})">&#x2715;</button></div>
+    </div>`).join('');
+}
+async function toggleShop(id) {
+  const item = data.shopping.find(s=>s.id===id); if(!item) return;
+  item.done = !item.done; renderShopping(); await sheetUpdate('shopping', item);
+}
+async function delShop(id) {
+  data.shopping = data.shopping.filter(s=>s.id!==id); renderShopping(); await sheetDelete('shopping', id);
+}
+async function addShoppingItem() {
+  const name = document.getElementById('si-name').value.trim();
+  if(!name){showToast('Please enter an item name','warning');return;}
+  const row = {id:uid(),name,priority:document.getElementById('si-priority').value,qty:document.getElementById('si-qty').value,cost:parseFloat(document.getElementById('si-cost').value)||0,note:document.getElementById('si-note').value,addedBy:getAddedBy(),done:false};
+  data.shopping.push(row); closeModal('m-shopping');
+  ['si-name','si-qty','si-cost','si-note'].forEach(id=>document.getElementById(id).value='');
+  renderShopping(); renderOverview(); showToast(name+' added to shopping list');
+  await sheetAdd('shopping', row);
+}
+
+// MEALS
+function renderMeals() { renderWeekGrid(); renderDayMeals(selectedMealDate); renderConsumption(); }
+function renderWeekGrid() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const weekStart = new Date(today); weekStart.setDate(today.getDate()-today.getDay());
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = '';
+  for(let i=0;i<7;i++) {
+    const d = new Date(weekStart); d.setDate(weekStart.getDate()+i);
+    const ds = d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+    const hasMeal = data.meals.some(m=>m.date===ds);
+    const isToday = d.getTime()===today.getTime();
+    const isSel = ds===selectedMealDate;
+    html += `<div class="day-col" onclick="selectMealDay('${ds}')">
+      <div class="day-lbl">${days[i]}</div>
+      <div class="day-num ${isToday?'today':''} ${isSel&&!isToday?'selected':''}">${d.getDate()}</div>
+      ${hasMeal?'<div class="day-mdot"></div>':'<div style="height:5px"></div>'}
+    </div>`;
+  }
+  document.getElementById('week-grid').innerHTML = html;
+}
+function selectMealDay(ds) { selectedMealDate=ds; renderWeekGrid(); renderDayMeals(ds); }
+function renderDayMeals(ds) {
+  const meals = data.meals.filter(m=>m.date===ds);
+  const isToday = ds===localToday();
+  const d = new Date(ds+'T00:00:00');
+  const lbl = isToday?'Today':d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  document.getElementById('meal-day-label').textContent = 'Meals for '+lbl;
+  const types = ['Breakfast','Lunch','Dinner','Snack'];
+  document.getElementById('today-meals').innerHTML = types.map(t=>{
+    const m = meals.find(x=>x.type===t);
+    return `<div class="meal-slot">
+      <div class="meal-time-row">
+        <div class="meal-time">${t}</div>
+        ${m?`<div style="display:flex;gap:4px"><button class="btn btn-xs" onclick="editMeal(${m.id})">Edit</button><button class="btn btn-xs btn-danger" onclick="delMeal(${m.id})">&#x2715;</button></div>`:`<button class="btn btn-xs" onclick="quickAddMeal('${t}','${ds}')">+ Add</button>`}
+      </div>
+      ${m?`<div class="meal-name">${m.name}</div><div class="meal-kcal">${m.kcal?m.kcal+' kcal':''}${m.notes?(m.kcal?' &middot; ':'')+m.notes:''}</div>${m.ingredients?checkIngredients(m.ingredients):''}`:
+          `<div style="color:var(--text3);font-size:13px;margin-top:4px">Not planned yet</div>`}
+    </div>`;
+  }).join('');
+  const total = meals.reduce((a,m)=>a+(parseInt(m.kcal)||0),0);
+  document.getElementById('cal-total').textContent = total.toLocaleString();
+  const pct = Math.min(100,Math.round(total/2000*100));
+  document.getElementById('cal-pct').textContent = pct+'%';
+  const bar = document.getElementById('cal-bar');
+  bar.style.width=pct+'%';
+  bar.style.background=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
+}
+function checkIngredients(ingStr) {
+  if(!ingStr) return '';
+  const words = ingStr.toLowerCase().split(/[\s,]+/).filter(w=>w.length>3);
+  const tracked = data.expiry.map(e=>e.name.toLowerCase());
+  const inShop = data.shopping.map(s=>s.name.toLowerCase());
+  const missing = words.filter(w=>!tracked.some(n=>n.includes(w))&&!inShop.some(n=>n.includes(w)));
+  if(!missing.length) return '';
+  return `<div class="meal-warning">WARNING May not be at home: <strong>${missing.join(', ')}</strong></div>`;
+}
+function quickAddMeal(type,ds){ document.getElementById('ml-type').value=type; document.getElementById('ml-date').value=ds; openModal('m-meal'); }
+async function delMeal(id){ data.meals=data.meals.filter(m=>m.id!==id); renderMeals(); await sheetDelete('meals',id); }
+async function addMeal() {
+  const name=document.getElementById('ml-name').value.trim();
+  if(!name){showToast('Please enter a meal name','warning');return;}
+  const ingredients=document.getElementById('ml-ingredients').value.trim();
+  const mealDate=document.getElementById('ml-date').value;
+  if(ingredients){
+    const words=ingredients.toLowerCase().split(/[\s,]+/).filter(w=>w.length>3);
+    const tracked=data.expiry.map(e=>e.name.toLowerCase());
+    const inShop=data.shopping.map(s=>s.name.toLowerCase());
+    const missing=words.filter(w=>!tracked.some(n=>n.includes(w))&&!inShop.some(n=>n.includes(w)));
+    if(missing.length){
+      addNotif('Meal "'+name+'" needs items possibly not at home: '+missing.join(', '),'#b55a08');
+      showToast('Some ingredients may not be available!','warning');
+      for(const item of missing){
+        if(!data.shopping.find(s=>s.name.toLowerCase().includes(item))){
+          const row={id:uid(),name:item+' (for '+name+')',priority:'regular',qty:'',cost:0,note:'Needed for meal plan',addedBy:getAddedBy(),done:false};
+          data.shopping.push(row); await sheetAdd('shopping',row);
+        }
+      }
+      renderShopping();
+    }
+  }
+  const row={id:uid(),name,type:document.getElementById('ml-type').value,date:mealDate,kcal:parseInt(document.getElementById('ml-kcal').value)||0,notes:document.getElementById('ml-notes').value,ingredients};
+  data.meals.push(row); selectedMealDate=mealDate; closeModal('m-meal');
+  ['ml-name','ml-kcal','ml-notes','ml-ingredients'].forEach(id=>document.getElementById(id).value='');
+  renderMeals(); renderOverview(); showToast(name+' added to meal plan');
+  await sheetAdd('meals',row);
+}
+function renderConsumption(){
+  document.getElementById('con-list').innerHTML=data.consumption.length?data.consumption.map(c=>`
+    <div class="con-item"><span class="con-label">${c.name}</span><div class="con-bar-wrap"><div class="con-bar" style="width:60%"></div></div><span class="con-val">${c.amount}</span><button class="btn btn-xs btn-danger" onclick="delCon(${c.id})">×</button></div>`).join(''):'<div class="empty"><p>Nothing logged yet</p></div>';
+}
+async function addConsumption(){
+  const name=document.getElementById('co-name').value.trim();
+  if(!name){showToast('Enter an item','warning');return;}
+  const row={id:uid(),name,amount:document.getElementById('co-amount').value,date:localToday()};
+  data.consumption.push(row); closeModal('m-con');
+  ['co-name','co-amount'].forEach(id=>document.getElementById(id).value='');
+  renderConsumption(); showToast('Logged'); await sheetAdd('consumption',row);
+}
+async function delCon(id){ data.consumption=data.consumption.filter(c=>c.id!==id); renderConsumption(); await sheetDelete('consumption',id); }
+
+// BILLS
+function renderBills(){
+  const food=data.bills.filter(b=>b.cat==='Food / Groceries');
+  const recurring=data.bills.filter(b=>b.recur!=='no');
+  const total=data.bills.reduce((a,b)=>a+(parseFloat(b.usd)||0),0);
+  const foodTotal=food.reduce((a,b)=>a+(parseFloat(b.usd)||0),0);
+  const utilCats=['Electricity','Water','Internet','Phone'];
+  const utilTotal=data.bills.filter(b=>utilCats.includes(b.cat)).reduce((a,b)=>a+(parseFloat(b.usd)||0),0);
+  const unpaid=data.bills.filter(b=>b.status==='unpaid').length;
+  document.getElementById('bi-total').textContent=fmtMoney(total);
+  document.getElementById('bi-food').textContent=fmtMoney(foodTotal);
+  document.getElementById('bi-util').textContent=fmtMoney(utilTotal);
+  document.getElementById('bi-unpaid').textContent=unpaid;
+  const pct=Math.min(100,Math.round(total/2000*100));
+  document.getElementById('bbar-fill').style.width=pct+'%';
+  document.getElementById('bbar-fill').style.background=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--green)';
+  document.getElementById('bbar-pct').textContent=pct+'%';
+  document.getElementById('bbar-spent').textContent=fmtMoney(total)+' spent';
+  const BILL_ICONS={Electricity:'E',Water:'W',Internet:'I',Phone:'P',Rent:'H','Food / Groceries':'S',Fuel:'F',Health:'H',Education:'E',Entertainment:'E',Other:'O'};
+  const BILL_EMOJI={Electricity:'⚡',Water:'💧',Internet:'📡',Phone:'📱',Rent:'🏠','Food / Groceries':'🛒',Fuel:'⛽',Health:'🏥',Education:'📚',Entertainment:'🎬',Other:'📋'};
+  const billRow=b=>{
+    const d=daysDiff(b.due);
+    const sc=b.status==='paid'?'s-paid':d<0?'s-overdue':'s-due';
+    const st=b.status==='paid'?'Paid':d<0?'Overdue':d<=3?'Due soon':'Pending';
+    return `<div class="bill-row">
+      <div class="bill-icon" style="background:${b.status==='paid'?'var(--green-bg)':'var(--amber-bg)'}">${BILL_EMOJI[b.cat]||'?'}</div>
+      <div class="bill-info"><div class="bill-name">${b.name}</div><div class="bill-meta">${fmtDate(b.due)}  &middot; ${b.recur!=='no'?b.recur:'one-time'}</div></div>
+      <div class="bill-right"><div class="bill-usd">${fmtMoney(b.usd)}</div><div class="bill-lbp">${currency==='USD'?Math.round((parseFloat(b.usd)||0)*(typeof LBP_RATE_LIVE!=='undefined'?LBP_RATE_LIVE:89500)).toLocaleString()+' LBP':'$'+(parseFloat(b.usd)||0).toFixed(2)}</div><div class="bill-status ${sc}">${st}</div></div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="btn btn-xs ${b.status==='paid'?'':'btn-success'}" onclick="toggleBillPaid(${b.id})">${b.status==='paid'?'Undo':'Paid'}</button>
+        <button class="btn btn-xs btn-dan<button class="btn btn-xs" onclick="editBill(${b.id})" style="margin-right:4px">Edit</button>ger" onclick="delBill(${b.id})">×</button>
+      </div></div>`;
+  };
+  document.getElementById('bi-recurring').innerHTML=recurring.length?recurring.map(billRow).join(''):'<div class="empty"><p>No recurring bills</p></div>';
+  document.getElementById('bi-food-list').innerHTML=food.length?food.map(billRow).join(''):'<div class="empty"><p>No food expenses</p></div>';
+  document.getElementById('bi-all').innerHTML=data.bills.length?[...data.bills].sort((a,b)=>new Date(b.due)-new Date(a.due)).map(billRow).join(''):'<div class="empty"><p>No bills yet</p></div>';
+  updateNavBadges();
+}
+async function toggleBillPaid(id){const b=data.bills.find(x=>x.id===id);if(!b)return;b.status=b.status==='paid'?'unpaid':'paid';renderBills();renderOverview();await sheetUpdate('bills',b);}
+async function delBill(id){data.bills=data.bills.filter(b=>b.id!==id);renderBills();renderOverview();await sheetDelete('bills',id);}
+async function addBill(){
+  const name=document.getElementById('bl-name').value.trim();
+  if(!name){showToast('Enter a bill name','warning');return;}
+  const row={id:uid(),name,cat:document.getElementById('bl-cat').value,usd:parseFloat(document.getElementById('bl-usd').value)||0,due:document.getElementById('bl-due').value,recur:document.getElementById('bl-recur').value,status:document.getElementById('bl-status').value};
+  data.bills.push(row);closeModal('m-bill');
+  ['bl-name','bl-usd','bl-lbp'].forEach(id=>document.getElementById(id).value='');
+  renderBills();renderOverview();showToast(name+' added');await sheetAdd('bills',row);
+}
+
+// APPLIANCES
+function renderAppliances(){
+  document.getElementById('ap-list').innerHTML=data.appliances.length?data.appliances.map(a=>{
+    const d=daysDiff(a.next);
+    const badge=d<0?'<span class="badge b-red">Overdue</span>':d<=30?'<span class="badge b-amber">Due soon</span>':'<span class="badge b-green">OK</span>';
+    return `<div class="mrow"><div class="micon">${a.emoji||'🔧'}</div><div class="minfo"><div class="mname">${a.name}</div><div class="mdetail">${a.brand} &middot; Last: ${fmtDate(a.last)} &middot; Next: ${fmtDate(a.next)}${a.notes?' . '+a.notes:''}</div></div>${badge}<button class="btn btn-xs btn-danger" onclick="editAppliance(${a.id})" style="margin-right:4px">Edit</button><button class="btn btn-xs btn-danger" onclick="delAppliance(${a.id})">&#x2715;</button></div>`;
+  }).join(''):'<div class="empty"><p>No appliances tracked</p></div>';
+}
+async function addAppliance(){
+  const name=document.getElementById('ap-name').value.trim();if(!name){showToast('Enter appliance name','warning');return;}
+  const row={id:uid(),name,brand:document.getElementById('ap-brand').value,last:document.getElementById('ap-last').value,next:document.getElementById('ap-next').value,notes:document.getElementById('ap-notes').value,emoji:'🔧'};
+  data.appliances.push(row);closeModal('m-appliance');['ap-name','ap-brand','ap-notes'].forEach(id=>document.getElementById(id).value='');
+  renderAppliances();showToast(name+' added');await sheetAdd('appliances',row);
+}
+async function delAppliance(id){data.appliances=data.appliances.filter(a=>a.id!==id);renderAppliances();await sheetDelete('appliances',id);}
+
+// MEDICATIONS
+function renderMeds(){
+  document.getElementById('med-list').innerHTML=data.medications.length?data.medications.map(m=>{
+    const d=daysDiff(m.refill);
+    const badge=d<=7?'<span class="badge b-amber">Refill soon</span>':'<span class="badge b-green">OK</span>';
+    return `<div class="mrow"><div class="micon" style="background:var(--purple-bg)">💊</div><div class="minfo"><div class="mname">${m.name} <span style="color:var(--text2);font-size:12px">for ${m.person}</span></div><div class="mdetail">${m.dose}${m.notes?' . '+m.notes:''} &middot; Refill: ${fmtDate(m.refill)}</div></div>${badge}<button class="btn btn-xs btn-danger" onclick="editMed(${m.id})" style="margin-right:4px">Edit</button><button class="btn btn-xs btn-danger" onclick="delMed(${m.id})">&#x2715;</button></div>`;
+  }).join(''):'<div class="empty"><p>No medications tracked</p></div>';
+}
+async function addMed(){
+  const name=document.getElementById('md-name').value.trim();if(!name){showToast('Enter medication name','warning');return;}
+  const row={id:uid(),name,person:document.getElementById('md-person').value,dose:document.getElementById('md-dose').value,refill:document.getElementById('md-refill').value,notes:document.getElementById('md-notes').value};
+  data.medications.push(row);closeModal('m-med');['md-name','md-person','md-dose','md-notes'].forEach(id=>document.getElementById(id).value='');
+  renderMeds();showToast(name+' added');await sheetAdd('medications',row);
+}
+async function delMed(id){data.medications=data.medications.filter(m=>m.id!==id);renderMeds();await sheetDelete('medications',id);}
+
+// CALENDAR
+function renderCalendar(){
+  const y=calViewDate.getFullYear(),mo=calViewDate.getMonth();
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-lbl').textContent=months[mo]+' '+y;
+  const first=new Date(y,mo,1).getDay(),days=new Date(y,mo+1,0).getDate();
+  const today=new Date();
+  let html='';let day=1;
+  for(let r=0;r<6;r++){
+    html+='<tr>';
+    for(let c=0;c<7;c++){
+      const cell=r*7+c;
+      if(cell<first||day>days){html+='<td></td>';continue;}
+      const ds=y+'-'+pad(mo+1)+'-'+pad(day);
+      const isToday=today.getFullYear()===y&&today.getMonth()===mo&&today.getDate()===day;
+      const evts=data.events.filter(e=>e.date===ds);
+      html+=`<td><div class="cnum ${isToday?'today':''}">${day}</div>`;
+      evts.forEach(e=>{html+=`<div class="cevent ${e.cat}" onclick="editEvent(${e.id})" style="cursor:pointer" title="Click to edit">${e.time?e.time+' ':''}${e.title} &#x270E;</div>`;});
+      html+='</td>';day++;
+    }
+    html+='</tr>';if(day>days)break;
+  }
+  document.getElementById('cal-body').innerHTML=html;
+}
+function changeMonth(dir){calViewDate.setMonth(calViewDate.getMonth()+dir);renderCalendar();}
+async function addEvent(){
+  const title=document.getElementById('ev-title').value.trim();if(!title){showToast('Enter event title','warning');return;}
+  const row={id:uid(),title,cat:document.getElementById('ev-cat').value,date:document.getElementById('ev-date').value,time:document.getElementById('ev-time').value,notes:document.getElementById('ev-notes').value};
+  data.events.push(row);closeModal('m-event');['ev-title','ev-notes','ev-time'].forEach(id=>document.getElementById(id).value='');
+  renderCalendar();showToast(title+' added to calendar');await sheetAdd('events',row);
+}
+
+
+// ══════════════════════════════════════════
+// EDIT FUNCTIONS
+// ══════════════════════════════════════════
+
+// ── Expiry ──
+function editExpiry(id) {
+  const e = data.expiry.find(x=>x.id===id); if(!e) return;
+  document.getElementById('edit-ep-id').value = id;
+  document.getElementById('edit-ep-name').value = e.name;
+  document.getElementById('edit-ep-cat').value = e.cat;
+  document.getElementById('edit-ep-loc').value = e.loc;
+  document.getElementById('edit-ep-date').value = e.date;
+  document.getElementById('edit-ep-notes').value = e.notes||'';
+  openModal('m-edit-expiry');
+}
+async function saveExpiry() {
+  const id = Number(document.getElementById('edit-ep-id').value);
+  const item = data.expiry.find(x=>x.id===id); if(!item) return;
+  item.name  = document.getElementById('edit-ep-name').value.trim();
+  item.cat   = document.getElementById('edit-ep-cat').value;
+  item.loc   = document.getElementById('edit-ep-loc').value;
+  item.date  = document.getElementById('edit-ep-date').value;
+  item.notes = document.getElementById('edit-ep-notes').value;
+  closeModal('m-edit-expiry');
+  renderExpiry(); renderOverview();
+  showToast(item.name+' updated');
+  await sheetUpdate('expiry', item);
+}
+
+// ── Shopping ──
+function editShopping(id) {
+  const s = data.shopping.find(x=>x.id===id); if(!s) return;
+  document.getElementById('edit-si-id').value = id;
+  document.getElementById('edit-si-name').value = s.name;
+  document.getElementById('edit-si-priority').value = s.priority;
+  document.getElementById('edit-si-qty').value = s.qty||'';
+  document.getElementById('edit-si-cost').value = s.cost||'';
+  document.getElementById('edit-si-note').value = s.note||'';
+  openModal('m-edit-shopping');
+}
+async function saveShopping() {
+  const id = Number(document.getElementById('edit-si-id').value);
+  const item = data.shopping.find(x=>x.id===id); if(!item) return;
+  item.name     = document.getElementById('edit-si-name').value.trim();
+  item.priority = document.getElementById('edit-si-priority').value;
+  item.qty      = document.getElementById('edit-si-qty').value;
+  item.cost     = parseFloat(document.getElementById('edit-si-cost').value)||0;
+  item.note     = document.getElementById('edit-si-note').value;
+  closeModal('m-edit-shopping');
+  renderShopping(); renderOverview();
+  showToast(item.name+' updated');
+  await sheetUpdate('shopping', item);
+}
+
+// ── Meal ──
+function editMeal(id) {
+  const m = data.meals.find(x=>x.id===id); if(!m) return;
+  document.getElementById('edit-ml-id').value = id;
+  document.getElementById('edit-ml-name').value = m.name;
+  document.getElementById('edit-ml-type').value = m.type;
+  document.getElementById('edit-ml-date').value = m.date;
+  document.getElementById('edit-ml-kcal').value = m.kcal||'';
+  document.getElementById('edit-ml-ingredients').value = m.ingredients||'';
+  document.getElementById('edit-ml-notes').value = m.notes||'';
+  openModal('m-edit-meal');
+}
+async function saveMeal() {
+  const id = Number(document.getElementById('edit-ml-id').value);
+  const item = data.meals.find(x=>x.id===id); if(!item) return;
+  item.name        = document.getElementById('edit-ml-name').value.trim();
+  item.type        = document.getElementById('edit-ml-type').value;
+  item.date        = document.getElementById('edit-ml-date').value;
+  item.kcal        = parseInt(document.getElementById('edit-ml-kcal').value)||0;
+  item.ingredients = document.getElementById('edit-ml-ingredients').value;
+  item.notes       = document.getElementById('edit-ml-notes').value;
+  selectedMealDate = item.date;
+  closeModal('m-edit-meal');
+  renderMeals(); renderOverview();
+  showToast(item.name+' updated');
+  await sheetUpdate('meals', item);
+}
+
+// ── Bill ──
+function editBill(id) {
+  const b = data.bills.find(x=>x.id===id); if(!b) return;
+  document.getElementById('edit-bl-id').value = id;
+  document.getElementById('edit-bl-name').value = b.name;
+  document.getElementById('edit-bl-cat').value = b.cat;
+  document.getElementById('edit-bl-usd').value = b.usd;
+  document.getElementById('edit-bl-lbp').value = Math.round((b.usd||0)*89500);
+  document.getElementById('edit-bl-due').value = b.due;
+  document.getElementById('edit-bl-recur').value = b.recur;
+  document.getElementById('edit-bl-status').value = b.status;
+  openModal('m-edit-bill');
+}
+function editSyncLBP(){ const v=parseFloat(document.getElementById('edit-bl-usd').value)||0; document.getElementById('edit-bl-lbp').value=Math.round(v*89500); }
+function editSyncUSD(){ const v=parseFloat(document.getElementById('edit-bl-lbp').value)||0; document.getElementById('edit-bl-usd').value=(v/(typeof LBP_RATE_LIVE!=='undefined'?LBP_RATE_LIVE:89500)).toFixed(2); }
+async function saveBill() {
+  const id = Number(document.getElementById('edit-bl-id').value);
+  const item = data.bills.find(x=>x.id===id); if(!item) return;
+  item.name   = document.getElementById('edit-bl-name').value.trim();
+  item.cat    = document.getElementById('edit-bl-cat').value;
+  item.usd    = parseFloat(document.getElementById('edit-bl-usd').value)||0;
+  item.due    = document.getElementById('edit-bl-due').value;
+  item.recur  = document.getElementById('edit-bl-recur').value;
+  item.status = document.getElementById('edit-bl-status').value;
+  closeModal('m-edit-bill');
+  renderBills(); renderOverview();
+  showToast(item.name+' updated');
+  await sheetUpdate('bills', item);
+}
+
+// ── Appliance ──
+function editAppliance(id) {
+  const a = data.appliances.find(x=>x.id===id); if(!a) return;
+  document.getElementById('edit-ap-id').value = id;
+  document.getElementById('edit-ap-name').value = a.name;
+  document.getElementById('edit-ap-brand').value = a.brand||'';
+  document.getElementById('edit-ap-last').value = a.last||'';
+  document.getElementById('edit-ap-next').value = a.next||'';
+  document.getElementById('edit-ap-notes').value = a.notes||'';
+  openModal('m-edit-appliance');
+}
+async function saveAppliance() {
+  const id = Number(document.getElementById('edit-ap-id').value);
+  const item = data.appliances.find(x=>x.id===id); if(!item) return;
+  item.name  = document.getElementById('edit-ap-name').value.trim();
+  item.brand = document.getElementById('edit-ap-brand').value;
+  item.last  = document.getElementById('edit-ap-last').value;
+  item.next  = document.getElementById('edit-ap-next').value;
+  item.notes = document.getElementById('edit-ap-notes').value;
+  closeModal('m-edit-appliance');
+  renderAppliances();
+  showToast(item.name+' updated');
+  await sheetUpdate('appliances', item);
+}
+
+// ── Medication ──
+function editMed(id) {
+  const m = data.medications.find(x=>x.id===id); if(!m) return;
+  document.getElementById('edit-md-id').value = id;
+  document.getElementById('edit-md-name').value = m.name;
+  document.getElementById('edit-md-person').value = m.person||'';
+  document.getElementById('edit-md-dose').value = m.dose||'';
+  document.getElementById('edit-md-refill').value = m.refill||'';
+  document.getElementById('edit-md-notes').value = m.notes||'';
+  openModal('m-edit-med');
+}
+async function saveMed() {
+  const id = Number(document.getElementById('edit-md-id').value);
+  const item = data.medications.find(x=>x.id===id); if(!item) return;
+  item.name   = document.getElementById('edit-md-name').value.trim();
+  item.person = document.getElementById('edit-md-person').value;
+  item.dose   = document.getElementById('edit-md-dose').value;
+  item.refill = document.getElementById('edit-md-refill').value;
+  item.notes  = document.getElementById('edit-md-notes').value;
+  closeModal('m-edit-med');
+  renderMeds();
+  showToast(item.name+' updated');
+  await sheetUpdate('medications', item);
+}
+
+// ── Event ──
+function editEvent(id) {
+  const e = data.events.find(x=>x.id===id); if(!e) return;
+  document.getElementById('edit-ev-id').value = id;
+  document.getElementById('edit-ev-title').value = e.title;
+  document.getElementById('edit-ev-cat').value = e.cat;
+  document.getElementById('edit-ev-date').value = e.date;
+  document.getElementById('edit-ev-time').value = e.time||'';
+  document.getElementById('edit-ev-notes').value = e.notes||'';
+  openModal('m-edit-event');
+}
+async function saveEvent() {
+  const id = Number(document.getElementById('edit-ev-id').value);
+  const item = data.events.find(x=>x.id===id); if(!item) return;
+  item.title = document.getElementById('edit-ev-title').value.trim();
+  item.cat   = document.getElementById('edit-ev-cat').value;
+  item.date  = document.getElementById('edit-ev-date').value;
+  item.time  = document.getElementById('edit-ev-time').value;
+  item.notes = document.getElementById('edit-ev-notes').value;
+  closeModal('m-edit-event');
+  renderCalendar();
+  showToast(item.title+' updated');
+  await sheetUpdate('events', item);
+}
+
+// ══════════════════════════════════════════
+// DIAGNOSTICS & SETTINGS
+// ══════════════════════════════════════════
+let diagLastSync = null;
+let diagTotalRecords = 0;
+let LBP_RATE_LIVE = 89500;
+let BUDGET_LIVE = 2000;
+
+function initSettingsPage() {
+  document.getElementById('diag-url').textContent = API;
+  document.getElementById('lbp-rate-input').value = LBP_RATE_LIVE;
+  document.getElementById('budget-input').value = BUDGET_LIVE;
+  refreshSheetCounts();
+  if (diagLastSync) {
+    document.getElementById('diag-lastsync').textContent = diagLastSync;
+    document.getElementById('diag-records').textContent = diagTotalRecords;
+  }
+}
+
+function refreshSheetCounts() {
+  const sheets = ['expiry','shopping','meals','consumption','bills','appliances','medications','events'];
+  const labels = ['Expiry dates','Shopping list','Meals','Consumption log','Bills & expenses','Appliances','Medications','Calendar events'];
+  const el = document.getElementById('diag-sheet-counts');
+  if (!el) return;
+  el.innerHTML = sheets.map((s,i) => {
+    const count = (data[s] || []).length;
+    return `<div class="irow">
+      <div class="iname">${labels[i]}</div>
+      <span class="badge ${count > 0 ? 'b-green' : 'b-gray'}">${count} row${count !== 1 ? 's' : ''}</span>
+    </div>`;
+  }).join('');
+}
+
+async function testConnection() {
+  const btn = document.getElementById('test-btn');
+  const dot = document.getElementById('diag-dot');
+  const status = document.getElementById('diag-status');
+  const detail = document.getElementById('diag-detail');
+  btn.disabled = true;
+  btn.textContent = 'Testing…';
+  dot.style.background = 'var(--amber)';
+  status.textContent = 'Connecting…';
+  try {
+    const start = Date.now();
+    const res = await apiCall({ action: 'ping' });
+    const ms = Date.now() - start;
+    if (res.ok) {
+      dot.style.background = 'var(--green)';
+      status.textContent = 'Connected ✓';
+      detail.textContent = `Response time: ${ms}ms · ${res.message || 'API running'}`;
+      showToast('Google Sheets connection OK (' + ms + 'ms)', 'success');
+    } else {
+      throw new Error(res.error || 'ok:false');
+    }
+  } catch(e) {
+    dot.style.background = 'var(--red)';
+    status.textContent = 'Connection failed';
+    detail.textContent = e.message + ' — Check that the Apps Script is deployed as a web app with access: Anyone';
+    showToast('Connection failed: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Test connection';
+}
+
+async function rawTest(action) {
+  const el = document.getElementById('diag-raw');
+  el.textContent = 'Calling ' + action + '…';
+  try {
+    const res = await apiCall({ action });
+    el.textContent = JSON.stringify(res, null, 2);
+  } catch(e) {
+    el.textContent = 'ERROR: ' + e.message;
+  }
+}
+
+function saveLBPRate() {
+  const v = parseInt(document.getElementById('lbp-rate-input').value);
+  if (!v || v < 1000) { showToast('Enter a valid LBP rate (e.g. 89500)', 'warning'); return; }
+  LBP_RATE_LIVE = v;
+  showToast('LBP rate updated to ' + v.toLocaleString(), 'success');
+  renderBills(); renderOverview();
+}
+
+function saveBudget() {
+  const v = parseInt(document.getElementById('budget-input').value);
+  if (!v || v < 1) { showToast('Enter a valid budget amount', 'warning'); return; }
+  BUDGET_LIVE = v;
+  showToast('Monthly budget updated to $' + v.toLocaleString(), 'success');
+  renderBills();
+}
+
+// Override fmtMoney and renderBills to use live rates
+// (fmtMoney already uses LBP constant — patch it to use live value)
+
+// ══════════════════════════════════════════
+// BOOT
+window.addEventListener('load',async()=>{
+  document.getElementById('loading-msg').textContent='Initialising sheets...';
+  try{ await fetch(API+'?action=init&nocache='+Date.now()); }catch(e){}
+  setTimeout(()=>{
+    document.getElementById('loading-overlay').classList.add('hide');
+    setTimeout(()=>{
+      document.getElementById('loading-overlay').style.display='none';
+      document.getElementById('login-screen').style.display='flex';
+    },400);
+  },1400);
+});
+</script>
+</body>
+</html>
