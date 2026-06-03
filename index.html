@@ -312,12 +312,239 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 .prog-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-top:6px}
 .prog-fill{height:100%;border-radius:4px}
 
-/* ── RESPONSIVE ── */
-@media(max-width:768px){
-  .sidebar{display:none}
-  .g2,.g3,.g4{grid-template-columns:1fr}
-  .content{padding:16px}
+/* ══════════════════════════════════════════
+   MOBILE-FIRST OVERHAUL
+   iPhone 17 Pro  = 393px CSS width
+   iPhone 17 Pro Max = 430px CSS width
+   ══════════════════════════════════════════ */
+
+/* ── BOTTOM NAV (mobile only) ── */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  z-index:200;
+  padding:0 0 env(safe-area-inset-bottom,0);
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);
+}
+.bnav-inner{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  height:56px;
+}
+.bnav-more-panel{
+  display:none;
+  position:fixed;
+  bottom:calc(56px + env(safe-area-inset-bottom,0));
+  left:0;right:0;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  border-radius:20px 20px 0 0;
+  padding:20px 16px 8px;
+  box-shadow:0 -8px 32px rgba(0,0,0,.12);
+  z-index:199;
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.bnav-more-panel.open{display:block}
+.bnav-more-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bnav-more-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border-radius:12px;border:none;background:none;cursor:pointer;font-size:10px;font-weight:600;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;transition:background .15s}
+.bnav-more-item:active{background:var(--surface2)}
+.bnav-more-item .mi{font-size:22px}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;font-size:9px;font-weight:600;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;padding:6px 2px;transition:color .15s;position:relative}
+.bnav-btn .bi{font-size:22px;line-height:1}
+.bnav-btn.active{color:var(--green)}
+.bnav-btn .bnav-badge{position:absolute;top:4px;right:50%;transform:translateX(10px);background:var(--red);color:#fff;border-radius:8px;font-size:9px;font-weight:700;padding:0 4px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface)}
+
+/* ── MOBILE TOPBAR ── */
+@media(max-width:767px){
+  /* Topbar: slim down, hide most elements */
+  .topbar{
+    padding:0 14px;
+    height:52px;
+  }
+  .topbar-logo{font-size:18px;gap:7px}
+  .topbar-right{gap:6px}
+
+  /* Hide desktop-only topbar items on mobile */
+  .sync-indicator,
+  #refresh-btn,
+  .user-chip,
+  .logout-btn{display:none!important}
+
+  /* Keep currency toggle and notif bell, but shrink */
+  .cur-toggle{gap:1px}
+  .cur-btn{padding:3px 8px;font-size:11px}
+  .notif-btn{width:34px;height:34px;font-size:15px}
+  .notif-panel{width:calc(100vw - 24px);right:12px;top:60px}
+
+  /* ── LAYOUT ── */
+  .sidebar{display:none!important}
+  .app-body{flex-direction:column}
+  .content{
+    padding:14px 14px calc(56px + env(safe-area-inset-bottom,0) + 14px);
+    max-width:100%;
+    overflow-x:hidden;
+  }
+
+  /* Bottom nav visible */
+  .bottom-nav{display:block}
+
+  /* ── GRIDS ── */
+  .g2,.g3,.g4{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .g4{grid-template-columns:1fr 1fr}
+
+  /* ── SECTION HEADER ── */
+  .sec-header{
+    margin-bottom:14px;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .sec-header h2{font-size:22px}
+  .sec-actions{margin-left:0;width:100%}
+  .sec-actions .btn{width:100%;justify-content:center;padding:11px 16px;font-size:14px}
+
+  /* ── METRIC CARDS ── */
+  .metric{padding:14px 14px}
+  .metric-value{font-size:24px}
+  .metric-label{font-size:10px}
+
+  /* ── CARDS ── */
+  .card{margin-bottom:12px}
+  .card-header{padding:12px 14px}
+  .card-body{padding:14px}
+
+  /* ── TABLES → CARD ROWS (expiry) ── */
+  .etable thead{display:none}
+  .etable tbody tr{
+    display:flex;flex-direction:column;
+    padding:12px 0;
+    border-bottom:1px solid var(--border);
+    gap:4px;
+  }
+  .etable tbody tr:last-child{border-bottom:none}
+  .etable td{
+    padding:0;border:none;
+    font-size:13px;
+  }
+  /* label hack using data-label */
+  .etable td[data-label]::before{
+    content:attr(data-label) ': ';
+    font-size:10px;font-weight:700;color:var(--text3);
+    text-transform:uppercase;letter-spacing:.04em;
+    display:inline;
+  }
+  .etable td:first-child{font-weight:700;font-size:15px}
+  .etable td:first-child::before{display:none}
+  /* action buttons always visible on mobile */
+  .etable .act{opacity:1!important}
+
+  /* ── BILLS ── */
+  .bill-row{padding:12px 0;gap:10px}
+  .bill-icon{width:34px;height:34px;font-size:16px;border-radius:8px}
+  .bill-name{font-size:13px}
+  .bill-usd{font-size:14px}
+
+  /* ── SHOPPING ── */
+  .shop-item{padding:12px 0;gap:10px}
+  .cbox{width:24px;height:24px}
+  .shop-name{font-size:14px}
+
+  /* ── MEAL WEEK ── */
+  .week-grid{gap:2px}
+  .day-lbl{font-size:8px}
+  .day-num{width:28px;height:28px;font-size:11px}
+
+  /* ── CALENDAR TABLE ── */
+  .fcal{table-layout:fixed}
+  .fcal th{padding:5px 2px;font-size:9px}
+  .fcal td{padding:3px 2px;min-height:40px}
+  .cnum{font-size:10px}
+  .cevent{font-size:8px;padding:1px 3px}
+
+  /* ── MODALS ── */
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal{
+    border-radius:20px 20px 0 0;
+    max-height:92vh;
+    width:100%;
+    max-width:100%;
+  }
+  .modal-header{padding:16px 20px}
+  .modal-body{padding:16px 20px 24px}
   .frow{grid-template-columns:1fr}
+  .ffield input,.ffield select,.ffield textarea{
+    padding:13px 14px;
+    font-size:16px; /* prevents iOS zoom */
+    border-radius:10px;
+  }
+  .factions{flex-direction:column-reverse;gap:8px}
+  .factions .btn{width:100%;justify-content:center;padding:13px;font-size:15px}
+
+  /* ── BUTTONS ── */
+  .btn{padding:9px 14px;font-size:13px}
+  .btn-sm{padding:7px 12px;font-size:12px}
+
+  /* ── SEARCH BAR ── */
+  .search-bar{flex-wrap:wrap;gap:6px}
+  .search-bar input{flex:1;min-width:0;font-size:16px;padding:10px 12px}
+  .search-bar select{width:100%;font-size:16px;padding:10px 12px}
+
+  /* ── SETTINGS DIAG ── */
+  #diag-url{font-size:10px;word-break:break-all}
+  .irow{flex-wrap:wrap;gap:8px;padding:12px 0}
+  .irow > div:last-child{width:100%}
+
+  /* ── TOAST ── */
+  .toast-wrap{right:10px;left:10px;top:60px}
+  .toast{max-width:100%}
+
+  /* ── LOGIN PAGE ── */
+  .login-box{padding:28px 20px;border-radius:16px}
+  .login-logo h1{font-size:24px}
+  .profile-grid{gap:10px}
+  .profile-btn{padding:14px 10px}
+  .p-avatar{width:40px;height:40px;font-size:18px}
+  .p-name{font-size:13px}
+  .fgroup input{font-size:16px;padding:13px 14px}
+  .btn-login{padding:15px;font-size:16px}
+
+  /* ── CONSUMPTION BAR ── */
+  .con-label{width:72px;font-size:12px}
+  .con-val{min-width:60px;font-size:11px}
+
+  /* ── SETTINGS GRID ── */
+  .lbp-row-inputs{flex-direction:column;align-items:flex-start!important;gap:8px!important}
+  #lbp-rate-input,#budget-input{width:100%!important;font-size:16px!important;padding:10px 12px!important}
+
+  /* ── CALENDAR HEADER ── */
+  .cal-nav{flex-wrap:wrap;gap:6px;align-items:center}
+  .cal-nav .btn-sm{flex:1;justify-content:center;min-width:70px}
+  .cal-nav .btn-primary{width:100%;justify-content:center}
+  #cal-month-lbl{order:-1;width:100%;text-align:center;font-size:15px!important;padding:0!important}
+
+  /* ── OVERVIEW GREETING ── */
+  #ov-greet{font-size:20px}
+
+  /* ── BUDGET BAR ── */
+  .bbar-wrap{padding:14px}
+  .bbar-head{margin-bottom:8px}
+  .bbar-pct{font-size:18px}
+}
+
+/* Extra: 430px (Pro Max) breathing room */
+@media(min-width:390px) and (max-width:767px){
+  .content{padding:16px 16px calc(56px + env(safe-area-inset-bottom,0) + 16px)}
+  .g2,.g3,.g4{gap:12px}
+  .metric-value{font-size:26px}
+}
+
+/* Desktop stays as-was */
+@media(min-width:768px){
+  .bottom-nav{display:none!important}
+  .bnav-more-panel{display:none!important}
 }
 </style>
 </head>
@@ -593,7 +820,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
       <div class="section" id="tab-calendar">
         <div class="sec-header">
           <div><h2>Family Calendar</h2><p class="sub">Household events and reminders</p></div>
-          <div class="sec-actions">
+          <div class="sec-actions cal-nav">
             <button class="btn btn-sm" onclick="changeMonth(-1)">← Prev</button>
             <span id="cal-month-lbl" style="font-weight:600;font-size:14px;padding:0 8px"></span>
             <button class="btn btn-sm" onclick="changeMonth(1)">Next →</button>
@@ -669,14 +896,14 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
           <div class="card-body">
             <div class="irow">
               <div><div class="iname">LBP Exchange Rate</div><div class="idetail">Used to convert USD amounts to LBP</div></div>
-              <div style="display:flex;align-items:center;gap:8px">
+              <div class="lbp-row-inputs" style="display:flex;align-items:center;gap:8px">
                 <input type="number" id="lbp-rate-input" style="width:100px;padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13px;background:var(--bg)" value="89500">
                 <button class="btn btn-sm btn-primary" onclick="saveLBPRate()">Save</button>
               </div>
             </div>
             <div class="irow">
               <div><div class="iname">Monthly Budget</div><div class="idetail">Used for the budget progress bar in Bills</div></div>
-              <div style="display:flex;align-items:center;gap:8px">
+              <div class="lbp-row-inputs" style="display:flex;align-items:center;gap:8px">
                 <input type="number" id="budget-input" style="width:100px;padding:6px 10px;border:1.5px solid var(--border);border-radius:var(--rsm);font-size:13px;background:var(--bg)" value="2000">
                 <button class="btn btn-sm btn-primary" onclick="saveBudget()">Save</button>
               </div>
@@ -691,6 +918,50 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 
     </div><!-- /content -->
   </div><!-- /app-body -->
+  <!-- BOTTOM NAV (mobile) -->
+  <div class="bottom-nav" id="bottom-nav">
+    <div class="bnav-inner">
+      <button class="bnav-btn active" id="bn-overview" onclick="switchTab('overview');setActiveNav('overview')">
+        <span class="bi">&#x1F4CA;</span>Home
+      </button>
+      <button class="bnav-btn" id="bn-shopping" onclick="switchTab('shopping');setActiveNav('shopping')">
+        <span class="bi">&#x1F6D2;</span>Shop
+        <span class="bnav-badge" id="bnn-shopping" style="display:none">0</span>
+      </button>
+      <button class="bnav-btn" id="bn-bills" onclick="switchTab('bills');setActiveNav('bills')">
+        <span class="bi">&#x1F4B3;</span>Bills
+        <span class="bnav-badge" id="bnn-bills" style="display:none">0</span>
+      </button>
+      <button class="bnav-btn" id="bn-calendar" onclick="switchTab('calendar');setActiveNav('calendar')">
+        <span class="bi">&#x1F4C5;</span>Cal
+      </button>
+      <button class="bnav-btn" id="bn-more" onclick="toggleMorePanel()">
+        <span class="bi">&#x2630;</span>More
+      </button>
+    </div>
+  </div>
+
+  <!-- MORE PANEL -->
+  <div class="bnav-more-panel" id="bnav-more-panel">
+    <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">All sections</div>
+    <div class="bnav-more-grid">
+      <button class="bnav-more-item" onclick="switchTab('expiry');setActiveNav('expiry');closeMorePanel()"><span class="mi">&#x1F4C5;</span>Expiry</button>
+      <button class="bnav-more-item" onclick="switchTab('meals');setActiveNav('meals');closeMorePanel()"><span class="mi">&#x1F37D;&#xFE0F;</span>Meals</button>
+      <button class="bnav-more-item" onclick="switchTab('appliances');setActiveNav('appliances');closeMorePanel()"><span class="mi">&#x1F527;</span>Appliances</button>
+      <button class="bnav-more-item" onclick="switchTab('meds');setActiveNav('meds');closeMorePanel()"><span class="mi">&#x1F48A;</span>Meds</button>
+      <button class="bnav-more-item" onclick="switchTab('settings');setActiveNav('settings');closeMorePanel()"><span class="mi">&#x2699;&#xFE0F;</span>Settings</button>
+      <button class="bnav-more-item" onclick="doLogout();closeMorePanel()"><span class="mi">&#x1F6AA;</span>Sign out</button>
+    </div>
+    <div style="height:1px;background:var(--border);margin:14px 0 10px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0 8px">
+      <span style="font-size:12px;color:var(--text2)" id="bn-user-name">—</span>
+      <div class="cur-toggle" style="transform:scale(.9);transform-origin:right center">
+        <button class="cur-btn active" id="bn-cur-usd" onclick="setCurrency('USD');closeMorePanel()">USD</button>
+        <button class="cur-btn" id="bn-cur-lbp" onclick="setCurrency('LBP');closeMorePanel()">LBP</button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /app -->
 
 <!-- TOASTS -->
@@ -1077,6 +1348,9 @@ function setupUserUI() {
   av.textContent = u.emoji; av.style.background = u.bg; av.style.color = u.color;
   document.getElementById('chip-name').textContent = u.name;
   document.getElementById('chip-role').textContent = u.role;
+  // bottom nav more panel
+  const bn = document.getElementById('bn-user-name');
+  if(bn) bn.textContent = u.emoji + ' ' + u.name;
 }
 
 function setDefaultDates() {
@@ -1123,7 +1397,35 @@ function switchTab(name) {
   document.querySelectorAll('.nav-item')[idx]?.classList.add('active');
   if (name==='overview') renderOverview();
   if (name==='settings') initSettingsPage();
+  setActiveNav(name);
+  // scroll content area to top on tab switch
+  const c = document.querySelector('.content');
+  if(c) c.scrollTop = 0;
 }
+
+// ── BOTTOM NAV helpers ──
+const BNAV_MAP = {overview:'bn-overview',shopping:'bn-shopping',bills:'bn-bills',calendar:'bn-calendar'};
+function setActiveNav(name) {
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  const id = BNAV_MAP[name];
+  if(id) document.getElementById(id)?.classList.add('active');
+  else document.getElementById('bn-more')?.classList.add('active');
+}
+function toggleMorePanel() {
+  const p = document.getElementById('bnav-more-panel');
+  p.classList.toggle('open');
+}
+function closeMorePanel() {
+  document.getElementById('bnav-more-panel')?.classList.remove('open');
+}
+// close more panel when tapping outside
+document.addEventListener('click', e => {
+  const panel = document.getElementById('bnav-more-panel');
+  const moreBtn = document.getElementById('bn-more');
+  if(panel && panel.classList.contains('open') && !panel.contains(e.target) && e.target !== moreBtn && !moreBtn?.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
 
 function updateNavBadges() {
   const expUrgent = data.expiry.filter(e=>daysDiff(e.date)<=2).length;
@@ -1132,6 +1434,9 @@ function updateNavBadges() {
   setBadge('nb-expiry', expUrgent);
   setBadge('nb-shopping', shopUrgent);
   setBadge('nb-bills', unpaid);
+  // bottom nav badges
+  setBadge('bnn-shopping', shopUrgent);
+  setBadge('bnn-bills', unpaid);
 }
 function setBadge(id, n) {
   const el = document.getElementById(id);
@@ -1146,6 +1451,11 @@ function setCurrency(c) {
   currency = c;
   document.getElementById('cur-usd').classList.toggle('active', c==='USD');
   document.getElementById('cur-lbp').classList.toggle('active', c==='LBP');
+  // sync bottom-nav more-panel buttons if present
+  const bu = document.getElementById('bn-cur-usd');
+  const bl = document.getElementById('bn-cur-lbp');
+  if(bu) bu.classList.toggle('active', c==='USD');
+  if(bl) bl.classList.toggle('active', c==='LBP');
   renderBills(); renderOverview();
 }
 function fmtMoney(usd) {
@@ -1300,10 +1610,10 @@ function renderExpiry() {
   document.getElementById('ex-tbody').innerHTML = items.length ? items.map(e=>`
     <tr>
       <td><strong>${e.name}</strong>${e.notes?'<br><span style="font-size:11px;color:var(--text3)">'+e.notes+'</span>':''}</td>
-      <td><span class="tag">${e.cat}</span></td>
-      <td style="color:var(--text2)">${e.loc}</td>
-      <td style="color:var(--text2)">${fmtDate(e.date)}</td>
-      <td>${expiryBadge(e.date)}</td>
+      <td data-label="Category"><span class="tag">${e.cat}</span></td>
+      <td data-label="Location" style="color:var(--text2)">${e.loc}</td>
+      <td data-label="Expires" style="color:var(--text2)">${fmtDate(e.date)}</td>
+      <td data-label="Status">${expiryBadge(e.date)}</td>
       <td style="white-space:nowrap"><button class="btn btn-xs act" onclick="editExpiry(${e.id})" style="margin-right:4px">Edit</button><button class="btn btn-xs btn-danger act" onclick="delExpiry(${e.id})">Remove</button></td>
     </tr>`).join('') : `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">No products found</td></tr>`;
   updateNavBadges();
