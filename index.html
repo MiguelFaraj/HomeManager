@@ -331,12 +331,12 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 .bnav-inner{
   display:grid;
   grid-template-columns:repeat(5,1fr);
-  height:56px;
+  height:64px;
 }
 .bnav-more-panel{
   display:none;
   position:fixed;
-  bottom:calc(56px + env(safe-area-inset-bottom,0));
+  bottom:calc(64px + env(safe-area-inset-bottom,0));
   left:0;right:0;
   background:var(--surface);
   border-top:1px solid var(--border);
@@ -349,196 +349,266 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .bnav-more-panel.open{display:block}
 .bnav-more-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.bnav-more-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 4px;border-radius:12px;border:none;background:none;cursor:pointer;font-size:10px;font-weight:600;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;transition:background .15s}
+.bnav-more-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:14px 4px;border-radius:14px;border:none;background:none;cursor:pointer;font-size:12px;font-weight:700;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;transition:background .15s}
 .bnav-more-item:active{background:var(--surface2)}
-.bnav-more-item .mi{font-size:22px}
-.bnav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;font-size:9px;font-weight:600;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;padding:6px 2px;transition:color .15s;position:relative}
-.bnav-btn .bi{font-size:22px;line-height:1}
+.bnav-more-item .mi{font-size:28px}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:none;background:none;cursor:pointer;font-size:11px;font-weight:700;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;padding:8px 2px;transition:color .15s;position:relative}
+.bnav-btn .bi{font-size:26px;line-height:1}
 .bnav-btn.active{color:var(--green)}
 .bnav-btn .bnav-badge{position:absolute;top:4px;right:50%;transform:translateX(10px);background:var(--red);color:#fff;border-radius:8px;font-size:9px;font-weight:700;padding:0 4px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;border:2px solid var(--surface)}
 
 /* ── MOBILE TOPBAR ── */
 @media(max-width:767px){
-  /* Topbar: slim down, hide most elements */
-  .topbar{
-    padding:0 14px;
-    height:52px;
-  }
-  .topbar-logo{font-size:18px;gap:7px}
-  .topbar-right{gap:6px}
+  /* Topbar */
+  .topbar{padding:0 16px;height:56px}
+  .topbar-logo{font-size:20px;gap:8px}
+  .topbar-right{gap:8px}
 
-  /* Hide desktop-only topbar items on mobile */
-  .sync-indicator,
-  #refresh-btn,
-  .user-chip,
-  .logout-btn{display:none!important}
+  /* Hide desktop-only topbar items */
+  .sync-indicator,#refresh-btn,.user-chip,.logout-btn{display:none!important}
 
-  /* Keep currency toggle and notif bell, but shrink */
-  .cur-toggle{gap:1px}
-  .cur-btn{padding:3px 8px;font-size:11px}
-  .notif-btn{width:34px;height:34px;font-size:15px}
-  .notif-panel{width:calc(100vw - 24px);right:12px;top:60px}
+  /* Currency + bell */
+  .cur-toggle{gap:2px}
+  .cur-btn{padding:6px 12px;font-size:13px;border-radius:18px}
+  .notif-btn{width:42px;height:42px;font-size:20px}
+  .notif-panel{width:calc(100vw - 24px);right:12px;top:64px}
 
   /* ── LAYOUT ── */
   .sidebar{display:none!important}
   .app-body{flex-direction:column}
   .content{
-    padding:14px 14px calc(56px + env(safe-area-inset-bottom,0) + 14px);
+    padding:18px 16px calc(72px + env(safe-area-inset-bottom,0) + 18px);
     max-width:100%;
     overflow-x:hidden;
   }
-
-  /* Bottom nav visible */
   .bottom-nav{display:block}
 
-  /* ── GRIDS ── */
-  .g2,.g3,.g4{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-  .g4{grid-template-columns:1fr 1fr}
+  /* ── BASE FONT ── */
+  body{font-size:16px;line-height:1.6}
+
+  /* ── GRIDS: single column on mobile so cards are FULL WIDTH & big ── */
+  .g2,.g3,.g4{grid-template-columns:1fr;gap:14px;margin-bottom:16px}
 
   /* ── SECTION HEADER ── */
   .sec-header{
-    margin-bottom:14px;
+    margin-bottom:18px;
     flex-direction:column;
     align-items:flex-start;
-    gap:10px;
+    gap:12px;
   }
-  .sec-header h2{font-size:22px}
+  .sec-header h2{font-size:26px}
+  .sec-header .sub{font-size:15px}
   .sec-actions{margin-left:0;width:100%}
-  .sec-actions .btn{width:100%;justify-content:center;padding:11px 16px;font-size:14px}
+  .sec-actions .btn,.sec-actions .btn-primary{
+    width:100%;justify-content:center;
+    padding:15px 20px;
+    font-size:16px;
+    border-radius:12px;
+    min-height:52px;
+  }
 
-  /* ── METRIC CARDS ── */
-  .metric{padding:14px 14px}
-  .metric-value{font-size:24px}
-  .metric-label{font-size:10px}
+  /* ── METRIC CARDS: tall, bold, easy to read ── */
+  .metric{
+    padding:22px 20px 18px;
+    border-radius:16px;
+  }
+  .metric-label{
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.03em;
+    margin-bottom:12px;
+  }
+  .metric-value{
+    font-size:42px;
+    line-height:1;
+  }
+  .metric-sub{
+    font-size:13px;
+    margin-top:8px;
+  }
 
   /* ── CARDS ── */
-  .card{margin-bottom:12px}
-  .card-header{padding:12px 14px}
-  .card-body{padding:14px}
+  .card{margin-bottom:16px;border-radius:16px}
+  .card-header{padding:18px 20px;min-height:56px}
+  .card-title{font-size:14px}
+  .card-body{padding:20px}
 
   /* ── TABLES → CARD ROWS (expiry) ── */
   .etable thead{display:none}
   .etable tbody tr{
     display:flex;flex-direction:column;
-    padding:12px 0;
+    padding:18px 0;
     border-bottom:1px solid var(--border);
-    gap:4px;
+    gap:6px;
   }
   .etable tbody tr:last-child{border-bottom:none}
-  .etable td{
-    padding:0;border:none;
-    font-size:13px;
-  }
-  /* label hack using data-label */
+  .etable td{padding:0;border:none;font-size:15px}
   .etable td[data-label]::before{
     content:attr(data-label) ': ';
-    font-size:10px;font-weight:700;color:var(--text3);
-    text-transform:uppercase;letter-spacing:.04em;
-    display:inline;
+    font-size:11px;font-weight:700;color:var(--text3);
+    text-transform:uppercase;letter-spacing:.04em;display:inline;
   }
-  .etable td:first-child{font-weight:700;font-size:15px}
+  .etable td:first-child{font-weight:700;font-size:17px}
   .etable td:first-child::before{display:none}
-  /* action buttons always visible on mobile */
-  .etable .act{opacity:1!important}
+  .etable .act{opacity:1!important;display:flex;gap:10px;margin-top:8px}
+  .etable .btn-xs{
+    flex:1;justify-content:center;
+    padding:10px 0;font-size:14px;
+    border-radius:10px;
+  }
 
   /* ── BILLS ── */
-  .bill-row{padding:12px 0;gap:10px}
-  .bill-icon{width:34px;height:34px;font-size:16px;border-radius:8px}
-  .bill-name{font-size:13px}
-  .bill-usd{font-size:14px}
+  .bill-row{padding:18px 0;gap:14px;align-items:flex-start}
+  .bill-icon{width:48px;height:48px;font-size:22px;border-radius:12px;flex-shrink:0}
+  .bill-name{font-size:16px;font-weight:700}
+  .bill-meta{font-size:14px;margin-top:3px}
+  .bill-usd{font-size:18px;font-weight:700}
+  .bill-lbp{font-size:13px;margin-top:3px}
+  .bill-status{font-size:13px;margin-top:4px}
 
   /* ── SHOPPING ── */
-  .shop-item{padding:12px 0;gap:10px}
-  .cbox{width:24px;height:24px}
-  .shop-name{font-size:14px}
+  .shop-item{padding:16px 0;gap:14px;align-items:flex-start}
+  .cbox{width:28px;height:28px;border-radius:7px;flex-shrink:0;margin-top:2px}
+  .shop-name{font-size:16px;font-weight:700}
+  .shop-meta{font-size:14px;margin-top:4px}
+
+  /* ── ROWS (irow used in settings/overview) ── */
+  .irow{flex-wrap:wrap;gap:8px;padding:18px 0;align-items:flex-start}
+  .iname{font-size:16px}
+  .idetail{font-size:14px;margin-top:3px}
+  .irow > div:last-child{width:100%}
 
   /* ── MEAL WEEK ── */
-  .week-grid{gap:2px}
-  .day-lbl{font-size:8px}
-  .day-num{width:28px;height:28px;font-size:11px}
+  .week-grid{gap:4px}
+  .day-lbl{font-size:10px}
+  .day-num{width:36px;height:36px;font-size:14px}
+
+  /* ── MEAL SLOTS ── */
+  .meal-slot{padding:16px 0}
+  .meal-name{font-size:16px}
+  .meal-kcal{font-size:14px;margin-top:4px}
+  .meal-time{font-size:12px}
+
+  /* ── CONSUMPTION BARS ── */
+  .con-item{padding:14px 0;gap:14px}
+  .con-label{width:90px;font-size:14px;font-weight:600}
+  .con-bar-wrap{height:10px;border-radius:5px}
+  .con-val{font-size:13px;min-width:80px}
+
+  /* ── MAINTENANCE ROWS ── */
+  .mrow{padding:18px 0;gap:14px}
+  .micon{width:48px;height:48px;font-size:22px;border-radius:12px}
+  .mname{font-size:16px}
+  .mdetail{font-size:14px;margin-top:4px}
+
+  /* ── BADGES ── */
+  .badge{font-size:13px;padding:5px 12px;border-radius:20px}
 
   /* ── CALENDAR TABLE ── */
   .fcal{table-layout:fixed}
-  .fcal th{padding:5px 2px;font-size:9px}
-  .fcal td{padding:3px 2px;min-height:40px}
-  .cnum{font-size:10px}
-  .cevent{font-size:8px;padding:1px 3px}
+  .fcal th{padding:8px 2px;font-size:11px}
+  .fcal td{padding:6px 2px;min-height:52px}
+  .cnum{font-size:12px}
+  .cevent{font-size:10px;padding:2px 4px;border-radius:4px}
+
+  /* ── BUDGET BAR ── */
+  .bbar-wrap{padding:20px;border-radius:16px;margin-bottom:16px}
+  .bbar-head{margin-bottom:12px}
+  .bbar-title{font-size:15px}
+  .bbar-pct{font-size:28px}
+  .bbar{height:16px;border-radius:8px}
+  .bbar-fill{border-radius:8px}
+  .bbar-foot{font-size:13px;margin-top:10px}
 
   /* ── MODALS ── */
   .modal-overlay{padding:0;align-items:flex-end}
   .modal{
-    border-radius:20px 20px 0 0;
+    border-radius:24px 24px 0 0;
     max-height:92vh;
-    width:100%;
-    max-width:100%;
+    width:100%;max-width:100%;
   }
-  .modal-header{padding:16px 20px}
-  .modal-body{padding:16px 20px 24px}
+  .modal-header{padding:20px 22px}
+  .modal-header h3{font-size:22px}
+  .modal-close{width:38px;height:38px;font-size:22px}
+  .modal-body{padding:20px 22px 28px}
   .frow{grid-template-columns:1fr}
+  .ffield{margin-bottom:18px}
+  .ffield label{font-size:13px;margin-bottom:8px}
   .ffield input,.ffield select,.ffield textarea{
-    padding:13px 14px;
-    font-size:16px; /* prevents iOS zoom */
-    border-radius:10px;
+    padding:15px 16px;
+    font-size:16px;
+    border-radius:12px;
+    min-height:52px;
   }
-  .factions{flex-direction:column-reverse;gap:8px}
-  .factions .btn{width:100%;justify-content:center;padding:13px;font-size:15px}
+  .factions{flex-direction:column-reverse;gap:10px;padding-top:20px}
+  .factions .btn{width:100%;justify-content:center;padding:15px;font-size:16px;border-radius:12px;min-height:52px}
 
-  /* ── BUTTONS ── */
-  .btn{padding:9px 14px;font-size:13px}
-  .btn-sm{padding:7px 12px;font-size:12px}
+  /* ── GENERAL BUTTONS ── */
+  .btn{padding:11px 18px;font-size:14px;border-radius:10px}
+  .btn-sm{padding:10px 16px;font-size:14px;min-height:44px}
+  .btn-xs{padding:8px 14px;font-size:13px;min-height:40px;border-radius:8px}
 
   /* ── SEARCH BAR ── */
-  .search-bar{flex-wrap:wrap;gap:6px}
-  .search-bar input{flex:1;min-width:0;font-size:16px;padding:10px 12px}
-  .search-bar select{width:100%;font-size:16px;padding:10px 12px}
+  .search-bar{flex-direction:column;gap:10px;margin-bottom:18px}
+  .search-bar input,.search-bar select{
+    width:100%;font-size:16px;
+    padding:14px 16px;
+    border-radius:12px;
+    min-height:52px;
+  }
 
-  /* ── SETTINGS DIAG ── */
-  #diag-url{font-size:10px;word-break:break-all}
-  .irow{flex-wrap:wrap;gap:8px;padding:12px 0}
-  .irow > div:last-child{width:100%}
+  /* ── PROGRESS BARS ── */
+  .prog-bar{height:10px;border-radius:5px;margin-top:8px}
 
   /* ── TOAST ── */
-  .toast-wrap{right:10px;left:10px;top:60px}
-  .toast{max-width:100%}
+  .toast-wrap{right:12px;left:12px;top:64px}
+  .toast{max-width:100%;font-size:14px;padding:14px 18px;border-radius:12px}
 
   /* ── LOGIN PAGE ── */
-  .login-box{padding:28px 20px;border-radius:16px}
-  .login-logo h1{font-size:24px}
-  .profile-grid{gap:10px}
-  .profile-btn{padding:14px 10px}
-  .p-avatar{width:40px;height:40px;font-size:18px}
-  .p-name{font-size:13px}
-  .fgroup input{font-size:16px;padding:13px 14px}
-  .btn-login{padding:15px;font-size:16px}
-
-  /* ── CONSUMPTION BAR ── */
-  .con-label{width:72px;font-size:12px}
-  .con-val{min-width:60px;font-size:11px}
+  .login-box{padding:32px 22px;border-radius:20px}
+  .login-icon{width:72px;height:72px;font-size:34px;border-radius:20px}
+  .login-logo h1{font-size:28px;margin-bottom:6px}
+  .login-logo p{font-size:15px}
+  .profile-grid{gap:14px;margin-bottom:32px}
+  .profile-btn{padding:20px 12px;border-radius:16px;border-width:2px}
+  .p-avatar{width:52px;height:52px;font-size:24px;margin-bottom:12px}
+  .p-name{font-size:15px;font-weight:700}
+  .p-role{font-size:13px;margin-top:4px}
+  .fgroup{margin-bottom:22px}
+  .fgroup label{font-size:13px;margin-bottom:8px}
+  .fgroup input{font-size:16px;padding:15px 16px;border-radius:12px;min-height:52px}
+  .btn-login{padding:17px;font-size:17px;border-radius:12px;margin-top:12px}
+  .login-hint{font-size:13px;margin-top:20px}
 
   /* ── SETTINGS GRID ── */
-  .lbp-row-inputs{flex-direction:column;align-items:flex-start!important;gap:8px!important}
-  #lbp-rate-input,#budget-input{width:100%!important;font-size:16px!important;padding:10px 12px!important}
+  .lbp-row-inputs{flex-direction:column;align-items:flex-start!important;gap:10px!important;width:100%}
+  #lbp-rate-input,#budget-input{width:100%!important;font-size:16px!important;padding:14px 16px!important;border-radius:12px!important;min-height:52px!important}
 
   /* ── CALENDAR HEADER ── */
-  .cal-nav{flex-wrap:wrap;gap:6px;align-items:center}
-  .cal-nav .btn-sm{flex:1;justify-content:center;min-width:70px}
-  .cal-nav .btn-primary{width:100%;justify-content:center}
-  #cal-month-lbl{order:-1;width:100%;text-align:center;font-size:15px!important;padding:0!important}
+  .cal-nav{flex-wrap:wrap;gap:8px;align-items:center}
+  .cal-nav .btn-sm{flex:1;justify-content:center;min-width:80px}
+  .cal-nav .btn-primary{width:100%;justify-content:center;padding:14px;font-size:16px;min-height:52px}
+  #cal-month-lbl{order:-1;width:100%;text-align:center;font-size:18px!important;font-weight:700;padding:0!important}
 
-  /* ── OVERVIEW GREETING ── */
-  #ov-greet{font-size:20px}
+  /* ── OVERVIEW ── */
+  #ov-greet{font-size:26px}
+  .sec-header .sub{font-size:15px}
 
-  /* ── BUDGET BAR ── */
-  .bbar-wrap{padding:14px}
-  .bbar-head{margin-bottom:8px}
-  .bbar-pct{font-size:18px}
+  /* ── NOTIFICATION ITEMS ── */
+  .nitem{padding:16px 20px}
+  .ntext{font-size:15px}
+  .ntime{font-size:13px;margin-top:5px}
 }
 
-/* Extra: 430px (Pro Max) breathing room */
-@media(min-width:390px) and (max-width:767px){
-  .content{padding:16px 16px calc(56px + env(safe-area-inset-bottom,0) + 16px)}
-  .g2,.g3,.g4{gap:12px}
-  .metric-value{font-size:26px}
+/* ── Pro Max 430px: a touch more breathing room ── */
+@media(min-width:400px) and (max-width:767px){
+  .content{padding:20px 18px calc(72px + env(safe-area-inset-bottom,0) + 20px)}
+  .metric{padding:26px 22px 20px}
+  .metric-value{font-size:48px}
+  .metric-label{font-size:14px}
+  .card-header{padding:20px 22px}
+  .card-body{padding:22px}
+  body{font-size:16px}
 }
 
 /* Desktop stays as-was */
@@ -584,7 +654,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
       <input type="password" id="login-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <button class="btn-login" onclick="doLogin()">Sign in →</button>
-    <div class="login-hint">Husband: <strong>1234</strong> &nbsp;·&nbsp; Wife: <strong>5678</strong></div>
+    <div class="login-hint">Husband: <strong>9234</strong> &nbsp;·&nbsp; Wife: <strong>0991</strong></div>
   </div>
 </div>
 
@@ -909,7 +979,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
               </div>
             </div>
             <div class="irow">
-              <div><div class="iname">Change passwords</div><div class="idetail">Husband: 1234 &nbsp;·&nbsp; Wife: 5678 (edit HTML to change)</div></div>
+              <div><div class="iname">Change passwords</div><div class="idetail">Husband: 9234 &nbsp;·&nbsp; Wife: 0091 (edit HTML to change)</div></div>
               <span class="badge b-gray">In HTML file</span>
             </div>
           </div>
@@ -1184,8 +1254,8 @@ const API = 'https://script.google.com/macros/s/AKfycbw0PPKZ3Ur5CWKy0ehkf5ZoMn20
 const LBP = 89500;
 const BUDGET = 2000;
 const USERS = {
-  husband: { name:'Husband', role:'Head of household', pass:'1234', bg:'#dbeafe', color:'#1a5fa8', emoji:'👨' },
-  wife:    { name:'Wife',    role:'Co-manager',        pass:'5678', bg:'#fce7f3', color:'#9d174d', emoji:'👩' }
+  husband: { name:'Husband', role:'Head of household', pass:'9234', bg:'#dbeafe', color:'#1a5fa8', emoji:'👨' },
+  wife:    { name:'Wife',    role:'Co-manager',        pass:'0991', bg:'#fce7f3', color:'#9d174d', emoji:'👩' }
 };
 const BILL_ICONS = { Electricity:'⚡',Water:'💧',Internet:'📡',Phone:'📱',Rent:'🏠','Food / Groceries':'🛒',Fuel:'⛽',Health:'🏥',Education:'📚',Entertainment:'🎬',Other:'📋' };
 
