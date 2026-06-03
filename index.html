@@ -246,17 +246,20 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 .con-val{font-size:12px;color:var(--text2);min-width:70px;text-align:right}
 
 /* ── BILLS ── */
-.bill-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.bill-row{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
 .bill-row:last-child{border-bottom:none}
-.bill-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bill-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;margin-top:2px}
 .bill-info{flex:1;min-width:0}
-.bill-name{font-weight:600;font-size:14px}
-.bill-meta{font-size:12px;color:var(--text2);margin-top:1px}
-.bill-right{text-align:right;flex-shrink:0}
-.bill-usd{font-weight:700;font-size:15px}
-.bill-lbp{font-size:11px;color:var(--text3);margin-top:1px}
-.bill-status{font-size:11px;font-weight:600;margin-top:2px}
-.s-paid{color:var(--green)}.s-due{color:var(--amber)}.s-overdue{color:var(--red)}
+.bill-name{font-weight:600;font-size:14px;line-height:1.3}
+.bill-meta{font-size:12px;color:var(--text2);margin-top:2px}
+.bill-actions{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+.bill-right{text-align:right;flex-shrink:0;min-width:80px}
+.bill-usd{font-weight:700;font-size:15px;white-space:nowrap}
+.bill-lbp{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap}
+.bill-status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+.s-paid{color:var(--green);background:var(--green-bg)}
+.s-due{color:var(--amber);background:var(--amber-bg)}
+.s-overdue{color:var(--red);background:var(--red-bg)}
 
 /* ── BUDGET BAR ── */
 .bbar-wrap{margin-bottom:22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh)}
@@ -459,12 +462,16 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 
   /* ── BILLS ── */
   .bill-row{padding:18px 0;gap:14px;align-items:flex-start}
-  .bill-icon{width:48px;height:48px;font-size:22px;border-radius:12px;flex-shrink:0}
-  .bill-name{font-size:16px;font-weight:700}
-  .bill-meta{font-size:14px;margin-top:3px}
-  .bill-usd{font-size:18px;font-weight:700}
-  .bill-lbp{font-size:13px;margin-top:3px}
-  .bill-status{font-size:13px;margin-top:4px}
+  .bill-icon{width:48px;height:48px;font-size:24px;border-radius:14px;flex-shrink:0;margin-top:2px}
+  .bill-info{flex:1;min-width:0;overflow:hidden}
+  .bill-name{font-size:16px;font-weight:700;line-height:1.3;word-break:break-word}
+  .bill-meta{font-size:14px;margin-top:4px;color:var(--text2)}
+  .bill-actions{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .bill-actions .btn-xs{padding:9px 14px;font-size:13px;border-radius:9px;min-height:38px;flex-shrink:0}
+  .bill-right{text-align:right;flex-shrink:0;min-width:90px;max-width:120px}
+  .bill-usd{font-size:18px;font-weight:800;white-space:nowrap}
+  .bill-lbp{font-size:12px;margin-top:4px;white-space:nowrap;color:var(--text3)}
+  .bill-status{font-size:12px;font-weight:700;padding:3px 10px;border-radius:10px;display:inline-block}
 
   /* ── SHOPPING ── */
   .shop-item{padding:16px 0;gap:14px;align-items:flex-start}
@@ -654,7 +661,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
       <input type="password" id="login-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <button class="btn-login" onclick="doLogin()">Sign in →</button>
-    <div class="login-hint">Husband: <strong>9234</strong> &nbsp;·&nbsp; Wife: <strong>0991</strong></div>
+    <div class="login-hint">Husband: <strong>1234</strong> &nbsp;·&nbsp; Wife: <strong>5678</strong></div>
   </div>
 </div>
 
@@ -979,7 +986,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
               </div>
             </div>
             <div class="irow">
-              <div><div class="iname">Change passwords</div><div class="idetail">Husband: 9234 &nbsp;·&nbsp; Wife: 0091 (edit HTML to change)</div></div>
+              <div><div class="iname">Change passwords</div><div class="idetail">Husband: 1234 &nbsp;·&nbsp; Wife: 5678 (edit HTML to change)</div></div>
               <span class="badge b-gray">In HTML file</span>
             </div>
           </div>
@@ -1072,7 +1079,14 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
     <div class="modal-body">
       <div class="frow"><div class="ffield"><label>Meal name</label><input type="text" id="ml-name" placeholder="e.g. Lentil soup"></div><div class="ffield"><label>Meal type</label><select id="ml-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select></div></div>
       <div class="frow"><div class="ffield"><label>Date</label><input type="date" id="ml-date"></div><div class="ffield"><label>Calories (kcal)</label><input type="number" id="ml-kcal" placeholder="e.g. 450"></div></div>
-      <div class="ffield"><label>Ingredients (comma-separated)</label><input type="text" id="ml-ingredients" placeholder="e.g. chicken, garlic, olive oil, lemon"></div>
+      <div class="ffield">
+        <label>Ingredients (comma-separated)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="ml-ingredients" placeholder="e.g. chicken, garlic, olive oil, lemon" style="flex:1" oninput="resetKcalFetch('ml')" onblur="autoFetchIfEmpty('ml')">
+          <button class="btn btn-sm" id="ml-fetch-btn" onclick="fetchKcalFromIngredients('ml')" title="Auto-fetch calories from ingredients" style="flex-shrink:0;white-space:nowrap">&#x1F50D; Fetch kcal</button>
+        </div>
+        <div id="ml-kcal-status" style="display:none;margin-top:10px;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5"></div>
+      </div>
       <div class="ffield"><label>Notes</label><textarea id="ml-notes" rows="2" placeholder="Cooking notes or instructions"></textarea></div>
       <div class="factions"><button class="btn" onclick="closeModal('m-meal')">Cancel</button><button class="btn btn-primary" onclick="addMeal()">Add meal</button></div>
     </div>
@@ -1182,7 +1196,14 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
       <input type="hidden" id="edit-ml-id">
       <div class="frow"><div class="ffield"><label>Meal name</label><input type="text" id="edit-ml-name"></div><div class="ffield"><label>Meal type</label><select id="edit-ml-type"><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option></select></div></div>
       <div class="frow"><div class="ffield"><label>Date</label><input type="date" id="edit-ml-date"></div><div class="ffield"><label>Calories (kcal)</label><input type="number" id="edit-ml-kcal"></div></div>
-      <div class="ffield"><label>Ingredients (comma-separated)</label><input type="text" id="edit-ml-ingredients"></div>
+      <div class="ffield">
+        <label>Ingredients (comma-separated)</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" id="edit-ml-ingredients" style="flex:1" oninput="resetKcalFetch('edit-ml')" onblur="autoFetchIfEmpty('edit-ml')">
+          <button class="btn btn-sm" id="edit-ml-fetch-btn" onclick="fetchKcalFromIngredients('edit-ml')" style="flex-shrink:0;white-space:nowrap">&#x1F50D; Fetch kcal</button>
+        </div>
+        <div id="edit-ml-kcal-status" style="display:none;margin-top:10px;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5"></div>
+      </div>
       <div class="ffield"><label>Notes</label><textarea id="edit-ml-notes" rows="2"></textarea></div>
       <div class="factions"><button class="btn" onclick="closeModal('m-edit-meal')">Cancel</button><button class="btn btn-primary" onclick="saveMeal()">Save changes</button></div>
     </div>
@@ -1254,8 +1275,8 @@ const API = 'https://script.google.com/macros/s/AKfycbw0PPKZ3Ur5CWKy0ehkf5ZoMn20
 const LBP = 89500;
 const BUDGET = 2000;
 const USERS = {
-  husband: { name:'Husband', role:'Head of household', pass:'9234', bg:'#dbeafe', color:'#1a5fa8', emoji:'👨' },
-  wife:    { name:'Wife',    role:'Co-manager',        pass:'0991', bg:'#fce7f3', color:'#9d174d', emoji:'👩' }
+  husband: { name:'Husband', role:'Head of household', pass:'1234', bg:'#dbeafe', color:'#1a5fa8', emoji:'👨' },
+  wife:    { name:'Wife',    role:'Co-manager',        pass:'5678', bg:'#fce7f3', color:'#9d174d', emoji:'👩' }
 };
 const BILL_ICONS = { Electricity:'⚡',Water:'💧',Internet:'📡',Phone:'📱',Rent:'🏠','Food / Groceries':'🛒',Fuel:'⛽',Health:'🏥',Education:'📚',Entertainment:'🎬',Other:'📋' };
 
@@ -1876,14 +1897,26 @@ function renderBills(){
     const d=daysDiff(b.due);
     const sc=b.status==='paid'?'s-paid':d<0?'s-overdue':'s-due';
     const st=b.status==='paid'?'Paid':d<0?'Overdue':d<=3?'Due soon':'Pending';
+    const lbpAlt=currency==='USD'
+      ? Math.round((parseFloat(b.usd)||0)*(typeof LBP_RATE_LIVE!=='undefined'?LBP_RATE_LIVE:89500)).toLocaleString()+' LBP'
+      : '$'+(parseFloat(b.usd)||0).toFixed(2);
     return `<div class="bill-row">
-      <div class="bill-icon" style="background:${b.status==='paid'?'var(--green-bg)':'var(--amber-bg)'}">${BILL_EMOJI[b.cat]||'?'}</div>
-      <div class="bill-info"><div class="bill-name">${b.name}</div><div class="bill-meta">${fmtDate(b.due)}  &middot; ${b.recur!=='no'?b.recur:'one-time'}</div></div>
-      <div class="bill-right"><div class="bill-usd">${fmtMoney(b.usd)}</div><div class="bill-lbp">${currency==='USD'?Math.round((parseFloat(b.usd)||0)*(typeof LBP_RATE_LIVE!=='undefined'?LBP_RATE_LIVE:89500)).toLocaleString()+' LBP':'$'+(parseFloat(b.usd)||0).toFixed(2)}</div><div class="bill-status ${sc}">${st}</div></div>
-      <div style="display:flex;gap:6px;flex-shrink:0">
-        <button class="btn btn-xs ${b.status==='paid'?'':'btn-success'}" onclick="toggleBillPaid(${b.id})">${b.status==='paid'?'Undo':'Paid'}</button>
-        <button class="btn btn-xs btn-dan<button class="btn btn-xs" onclick="editBill(${b.id})" style="margin-right:4px">Edit</button>ger" onclick="delBill(${b.id})">×</button>
-      </div></div>`;
+      <div class="bill-icon" style="background:${b.status==='paid'?'var(--green-bg)':'var(--amber-bg)'}">${BILL_EMOJI[b.cat]||'📋'}</div>
+      <div class="bill-info">
+        <div class="bill-name">${b.name}</div>
+        <div class="bill-meta">${fmtDate(b.due)} &middot; ${b.recur!=='no'?b.recur:'one-time'}</div>
+        <div class="bill-actions">
+          <span class="bill-status ${sc}">${st}</span>
+          <button class="btn btn-xs ${b.status==='paid'?'':'btn-success'}" onclick="toggleBillPaid(${b.id})">${b.status==='paid'?'Undo':'Mark paid'}</button>
+          <button class="btn btn-xs" onclick="editBill(${b.id})">Edit</button>
+          <button class="btn btn-xs btn-danger" onclick="delBill(${b.id})">Remove</button>
+        </div>
+      </div>
+      <div class="bill-right">
+        <div class="bill-usd">${fmtMoney(b.usd)}</div>
+        <div class="bill-lbp">${lbpAlt}</div>
+      </div>
+    </div>`;
   };
   document.getElementById('bi-recurring').innerHTML=recurring.length?recurring.map(billRow).join(''):'<div class="empty"><p>No recurring bills</p></div>';
   document.getElementById('bi-food-list').innerHTML=food.length?food.map(billRow).join(''):'<div class="empty"><p>No food expenses</p></div>';
@@ -2248,6 +2281,168 @@ function saveBudget() {
 // (fmtMoney already uses LBP constant — patch it to use live value)
 
 // ══════════════════════════════════════════
+
+// ══════════════════════════════════════════
+// KCAL AUTO-FETCH  (Open Food Facts API)
+// ══════════════════════════════════════════
+
+/**
+ * Fetch calories for each ingredient using Open Food Facts search API.
+ * prefix = 'ml' (Add modal) or 'edit-ml' (Edit modal)
+ */
+async function fetchKcalFromIngredients(prefix) {
+  const ingredientsEl = document.getElementById(prefix + '-ingredients');
+  const kcalEl        = document.getElementById(prefix + '-kcal');
+  const statusEl      = document.getElementById(prefix + '-kcal-status');
+  const btn           = document.getElementById(prefix + '-fetch-btn');
+
+  const raw = (ingredientsEl.value || '').trim();
+  if (!raw) { showToast('Enter ingredients first', 'warning'); return; }
+
+  const ingredients = raw.split(',').map(s => s.trim()).filter(Boolean);
+  if (!ingredients.length) { showToast('No valid ingredients found', 'warning'); return; }
+
+  // UI: loading state
+  btn.disabled = true;
+  btn.textContent = '⏳ Fetching…';
+  statusEl.style.display = 'block';
+  statusEl.style.background = 'var(--surface2)';
+  statusEl.style.color = 'var(--text2)';
+  statusEl.innerHTML = '<span style="opacity:.6">Looking up ' + ingredients.length + ' ingredient' + (ingredients.length > 1 ? 's' : '') + '…</span>';
+
+  const results = [];
+  let totalKcal = 0;
+  let foundCount = 0;
+
+  for (const ingredient of ingredients) {
+    try {
+      const url = 'https://world.openfoodfacts.org/cgi/search.pl?search_terms=' +
+        encodeURIComponent(ingredient) +
+        '&search_simple=1&action=process&json=1&page_size=5&fields=product_name,nutriments';
+
+      const res  = await fetch(url);
+      const data = await res.json();
+      const products = (data.products || []).filter(p => p.nutriments && p.nutriments['energy-kcal_100g']);
+
+      if (products.length) {
+        // pick the first product that has a name matching our ingredient reasonably well
+        const best = products.find(p =>
+          p.product_name && p.product_name.toLowerCase().includes(ingredient.toLowerCase().split(' ')[0])
+        ) || products[0];
+
+        const kcalPer100g = best.nutriments['energy-kcal_100g'];
+        // Assume a reasonable portion size based on ingredient type
+        const portion = estimatePortion(ingredient);
+        const kcal = Math.round((kcalPer100g * portion) / 100);
+        totalKcal += kcal;
+        foundCount++;
+        results.push({ name: ingredient, kcal, portion, per100g: Math.round(kcalPer100g), found: true });
+      } else {
+        results.push({ name: ingredient, kcal: 0, found: false });
+      }
+    } catch(e) {
+      results.push({ name: ingredient, kcal: 0, found: false, error: true });
+    }
+  }
+
+  // Build result HTML
+  const rows = results.map(r => {
+    if (r.found) {
+      return \`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span style="font-weight:600;text-transform:capitalize">\${r.name}</span>
+        <span style="color:var(--green);font-weight:700">\${r.kcal} kcal</span>
+      </div>\`;
+    } else {
+      return \`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span style="text-transform:capitalize;opacity:.6">\${r.name}</span>
+        <span style="color:var(--text3);font-size:12px">not found</span>
+      </div>\`;
+    }
+  }).join('');
+
+  const headerColor = foundCount > 0 ? 'var(--green)' : 'var(--amber)';
+  const headerBg    = foundCount > 0 ? 'var(--green-bg)' : 'var(--amber-bg)';
+
+  statusEl.style.background = headerBg;
+  statusEl.style.color = 'var(--text)';
+  statusEl.innerHTML = \`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="font-weight:700;font-size:14px">Estimated total</span>
+      <span style="font-size:20px;font-weight:800;color:\${headerColor}">\${totalKcal} kcal</span>
+    </div>
+    <div style="margin-bottom:10px">\${rows}</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:6px">
+      &#x2139;&#xFE0F; Based on typical portions · \${foundCount}/\${ingredients.length} found via Open Food Facts
+    </div>
+    \${totalKcal > 0 ? \`<button class="btn btn-success" onclick="applyFetchedKcal('\${prefix}',\${totalKcal})" style="width:100%;margin-top:12px;justify-content:center;padding:12px;font-size:15px;border-radius:10px">
+      &#x2713; Use \${totalKcal} kcal
+    </button>\` : ''}
+  \`;
+
+  btn.disabled = false;
+  btn.textContent = '\uD83D\uDD0D Fetch kcal';
+
+  if (foundCount === 0) {
+    showToast('No calorie data found for those ingredients', 'warning');
+  } else {
+    showToast('Found calories for ' + foundCount + '/' + ingredients.length + ' ingredients', 'success');
+  }
+}
+
+function applyFetchedKcal(prefix, total) {
+  document.getElementById(prefix + '-kcal').value = total;
+  const statusEl = document.getElementById(prefix + '-kcal-status');
+  statusEl.querySelector('button')?.remove();
+  const applied = document.createElement('div');
+  applied.style.cssText = 'margin-top:8px;font-weight:700;color:var(--green);font-size:14px;text-align:center';
+  applied.textContent = '\u2713 ' + total + ' kcal applied!';
+  statusEl.appendChild(applied);
+  showToast(total + ' kcal auto-filled', 'success');
+}
+
+
+function autoFetchIfEmpty(prefix) {
+  const kcalEl = document.getElementById(prefix + '-kcal');
+  const ingEl  = document.getElementById(prefix + '-ingredients');
+  if (ingEl.value.trim() && (!kcalEl.value || kcalEl.value === '0')) {
+    fetchKcalFromIngredients(prefix);
+  }
+}
+function resetKcalFetch(prefix) {
+  const statusEl = document.getElementById(prefix + '-kcal-status');
+  if (statusEl) statusEl.style.display = 'none';
+}
+
+/**
+ * Estimate a reasonable portion in grams for common ingredient types.
+ * This is used to convert per-100g values to a plausible serving.
+ */
+function estimatePortion(ingredient) {
+  const name = ingredient.toLowerCase();
+  // Oils & fats — small amounts
+  if (/oil|butter|ghee|margarine|lard/.test(name)) return 15;
+  // Condiments & spices — tiny amounts
+  if (/garlic|ginger|spice|cumin|turmeric|pepper|salt|cinnamon|paprika|herb|basil|oregano|thyme|sauce|vinegar|mustard|ketchup/.test(name)) return 10;
+  // Cheese
+  if (/cheese/.test(name)) return 30;
+  // Eggs
+  if (/egg/.test(name)) return 55;
+  // Nuts & seeds
+  if (/nut|seed|almond|walnut|cashew|peanut|sesame|tahini/.test(name)) return 25;
+  // Legumes (cooked)
+  if (/lentil|chickpea|bean|pea/.test(name)) return 150;
+  // Dairy liquids
+  if (/milk|cream|yogurt|yoghurt/.test(name)) return 120;
+  // Meat & fish
+  if (/chicken|beef|lamb|pork|fish|tuna|salmon|shrimp|prawn|turkey|meat/.test(name)) return 150;
+  // Grains & starches
+  if (/rice|pasta|bread|noodle|flour|oat|wheat|barley|quinoa|couscous|potato/.test(name)) return 80;
+  // Fruits
+  if (/lemon|lime|orange|apple|banana|tomato|avocado|mango|berry/.test(name)) return 80;
+  // Vegetables (default)
+  return 80;
+}
+
 // BOOT
 window.addEventListener('load',async()=>{
   document.getElementById('loading-msg').textContent='Initialising sheets...';
