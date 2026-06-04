@@ -35,7 +35,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
 .loading-logo span{color:#4ade80}
 .loading-sub{color:#6b6b68;font-size:13px;margin-bottom:32px}
 .spinner{width:36px;height:36px;border:3px solid #2a2a28;border-top-color:#4ade80;border-radius:50%;animation:spin .7s linear infinite}
-.loading-msg{color:#4b4b48;font-size:12px;margin-top:16px}
+.loading-msg{color:#8a8a80;font-size:14px;margin-top:16px;text-align:center;max-width:260px;line-height:1.5}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── LOGIN ── */
@@ -633,6 +633,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
   <div class="loading-sub">Your household, organised</div>
   <div class="spinner"></div>
   <div class="loading-msg" id="loading-msg">Connecting to Google Sheets…</div>
+  <button id="loading-skip" onclick="showLoginScreen()" style="display:none;margin-top:24px;padding:12px 28px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:24px;color:#fff;font-size:15px;font-family:inherit;font-weight:600;cursor:pointer;letter-spacing:.02em">Skip → Use offline</button>
 </div>
 
 <!-- LOGIN -->
@@ -661,7 +662,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
       <input type="password" id="login-pass" placeholder="Enter your password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <button class="btn-login" onclick="doLogin()">Sign in →</button>
-    <div class="login-hint">Husband: <strong>1234</strong> &nbsp;·&nbsp; Wife: <strong>5678</strong></div>
+    <div class="login-hint">Husband: <strong>9234</strong> &nbsp;·&nbsp; Wife: <strong>0991</strong></div>
   </div>
 </div>
 
@@ -986,7 +987,7 @@ button,input,select,textarea{font-family:'Plus Jakarta Sans',sans-serif}
               </div>
             </div>
             <div class="irow">
-              <div><div class="iname">Change passwords</div><div class="idetail">Husband: 1234 &nbsp;·&nbsp; Wife: 5678 (edit HTML to change)</div></div>
+              <div><div class="iname">Change passwords</div><div class="idetail">Husband: 9234 &nbsp;·&nbsp; Wife: 0991 (edit HTML to change)</div></div>
               <span class="badge b-gray">In HTML file</span>
             </div>
           </div>
@@ -1275,8 +1276,8 @@ const API = 'https://script.google.com/macros/s/AKfycbw0PPKZ3Ur5CWKy0ehkf5ZoMn20
 const LBP = 89500;
 const BUDGET = 2000;
 const USERS = {
-  husband: { name:'Husband', role:'Head of household', pass:'1234', bg:'#dbeafe', color:'#1a5fa8', emoji:'👨' },
-  wife:    { name:'Wife',    role:'Co-manager',        pass:'5678', bg:'#fce7f3', color:'#9d174d', emoji:'👩' }
+  husband: { name:'Husband', role:'Head of household', pass:'9234', bg:'#dbeafe', color:'#1a5fa8', emoji:'👨' },
+  wife:    { name:'Wife',    role:'Co-manager',        pass:'0991', bg:'#fce7f3', color:'#9d174d', emoji:'👩' }
 };
 const BILL_ICONS = { Electricity:'⚡',Water:'💧',Internet:'📡',Phone:'📱',Rent:'🏠','Food / Groceries':'🛒',Fuel:'⛽',Health:'🏥',Education:'📚',Entertainment:'🎬',Other:'📋' };
 
@@ -1309,24 +1310,31 @@ function setSyncState(state, msg) {
   txt.textContent = msg;
 }
 
-async function apiCall(params) {
+async function apiCall(params, timeoutMs=12000) {
   const url = API + '?nocache=' + Date.now();
-  const resp = await fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(params),
-    headers: { 'Content-Type': 'text/plain' }
-  });
-  return resp.json();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(params),
+      headers: { 'Content-Type': 'text/plain' },
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+    return resp.json();
+  } catch(e) {
+    clearTimeout(timer);
+    throw e;
+  }
 }
 
 async function loadAllData() {
   setSyncState('syncing', 'Loading…');
   try {
-    // Step 1: ensure all sheet tabs exist
-    await apiCall({ action:'init' });
-    // Step 2: fetch all data
-    const res = await apiCall({ action:'getAll' });
-    if (!res.ok || !res.data) {
+    // fetch all data (init already done at boot)
+    const res = await apiCall({ action:'getAll' }, 15000);
+    if (!res || !res.ok || !res.data) {
       setSyncState('ok', 'Ready (empty sheets)');
       return true;
     }
@@ -1358,8 +1366,9 @@ async function loadAllData() {
     return true;
   } catch(e) {
     console.error('loadAllData error:', e);
-    setSyncState('err', 'Offline — check connection');
-    showToast('Could not reach Google Sheets — running offline','warning');
+    const isAbort = e && e.name === 'AbortError';
+    setSyncState('err', isAbort ? 'Timed out — offline mode' : 'Offline — check connection');
+    showToast('Running offline — changes will not sync until reconnected','warning');
     return false;
   }
 }
@@ -2348,15 +2357,15 @@ async function fetchKcalFromIngredients(prefix) {
   // Build result HTML
   const rows = results.map(r => {
     if (r.found) {
-      return \`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border)">
-        <span style="font-weight:600;text-transform:capitalize">\${r.name}</span>
-        <span style="color:var(--green);font-weight:700">\${r.kcal} kcal</span>
-      </div>\`;
+      return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span style="font-weight:600;text-transform:capitalize">${r.name}</span>
+        <span style="color:var(--green);font-weight:700">${r.kcal} kcal</span>
+      </div>`;
     } else {
-      return \`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border)">
-        <span style="text-transform:capitalize;opacity:.6">\${r.name}</span>
+      return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--border)">
+        <span style="text-transform:capitalize;opacity:.6">${r.name}</span>
         <span style="color:var(--text3);font-size:12px">not found</span>
-      </div>\`;
+      </div>`;
     }
   }).join('');
 
@@ -2365,19 +2374,19 @@ async function fetchKcalFromIngredients(prefix) {
 
   statusEl.style.background = headerBg;
   statusEl.style.color = 'var(--text)';
-  statusEl.innerHTML = \`
+  statusEl.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <span style="font-weight:700;font-size:14px">Estimated total</span>
-      <span style="font-size:20px;font-weight:800;color:\${headerColor}">\${totalKcal} kcal</span>
+      <span style="font-size:20px;font-weight:800;color:${headerColor}">${totalKcal} kcal</span>
     </div>
-    <div style="margin-bottom:10px">\${rows}</div>
+    <div style="margin-bottom:10px">${rows}</div>
     <div style="font-size:11px;color:var(--text3);margin-top:6px">
-      &#x2139;&#xFE0F; Based on typical portions · \${foundCount}/\${ingredients.length} found via Open Food Facts
+      &#x2139;&#xFE0F; Based on typical portions · ${foundCount}/${ingredients.length} found via Open Food Facts
     </div>
-    \${totalKcal > 0 ? \`<button class="btn btn-success" onclick="applyFetchedKcal('\${prefix}',\${totalKcal})" style="width:100%;margin-top:12px;justify-content:center;padding:12px;font-size:15px;border-radius:10px">
-      &#x2713; Use \${totalKcal} kcal
-    </button>\` : ''}
-  \`;
+    ${totalKcal > 0 ? `<button class="btn btn-success" onclick="applyFetchedKcal('${prefix}',${totalKcal})" style="width:100%;margin-top:12px;justify-content:center;padding:12px;font-size:15px;border-radius:10px">
+      &#x2713; Use ${totalKcal} kcal
+    </button>` : ''}
+  `;
 
   btn.disabled = false;
   btn.textContent = '\uD83D\uDD0D Fetch kcal';
@@ -2444,16 +2453,46 @@ function estimatePortion(ingredient) {
 }
 
 // BOOT
-window.addEventListener('load',async()=>{
-  document.getElementById('loading-msg').textContent='Initialising sheets...';
-  try{ await fetch(API+'?action=init&nocache='+Date.now()); }catch(e){}
-  setTimeout(()=>{
-    document.getElementById('loading-overlay').classList.add('hide');
-    setTimeout(()=>{
-      document.getElementById('loading-overlay').style.display='none';
-      document.getElementById('login-screen').style.display='flex';
-    },400);
-  },1400);
+function showLoginScreen() {
+  document.getElementById('loading-overlay').classList.add('hide');
+  setTimeout(() => {
+    document.getElementById('loading-overlay').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }, 350);
+}
+
+window.addEventListener('load', async () => {
+  const msgEl  = document.getElementById('loading-msg');
+  const skipEl = document.getElementById('loading-skip');
+
+  msgEl.textContent = 'Connecting to Google Sheets…';
+
+  // Show skip button after 4s so user isn't trapped
+  const skipTimer = setTimeout(() => {
+    if (skipEl) {
+      skipEl.style.display = 'inline-block';
+      msgEl.textContent = 'Taking a while… tap Skip to use offline';
+    }
+  }, 4000);
+
+  // Hard timeout: always proceed after 10s no matter what
+  const hardTimer = setTimeout(() => {
+    clearTimeout(skipTimer);
+    msgEl.textContent = 'Offline mode — data will not sync';
+    showLoginScreen();
+  }, 10000);
+
+  try {
+    // Fire init with a short timeout — non-critical, just warms up the script
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 8000);
+    await fetch(API + '?action=init&nocache=' + Date.now(), { signal: controller.signal }).catch(() => {});
+    clearTimeout(t);
+  } catch(e) { /* ignore */ }
+
+  clearTimeout(skipTimer);
+  clearTimeout(hardTimer);
+  showLoginScreen();
 });
 </script>
 </body>
