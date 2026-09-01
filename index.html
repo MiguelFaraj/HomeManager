@@ -1330,6 +1330,34 @@ function isThisMonth(dateStr) {
 }
 
 // ══════════════════════════════════════════
+// QUICK-ADD DEEP LINKS
+// e.g. https://yoursite.com/?quickadd=bill  — used to jump straight to
+// a specific "Add" form after login. Handy for an iOS Shortcut wired up
+// to Back Tap, a home-screen bookmark, etc.
+// ══════════════════════════════════════════
+const QUICKADD_MAP = {
+  bill:      { tab:'bills',      modal:'m-bill',      focus:'bl-name' },
+  expiry:    { tab:'expiry',     modal:'m-expiry',     focus:'ep-name' },
+  shopping:  { tab:'shopping',   modal:'m-shopping',   focus:'si-name' },
+  meal:      { tab:'meals',      modal:'m-meal',       focus:'ml-name' },
+  appliance: { tab:'appliances', modal:'m-appliance',  focus:'ap-name' },
+  med:       { tab:'meds',       modal:'m-med',        focus:'md-name' },
+  event:     { tab:'calendar',   modal:'m-event',      focus:'ev-title' }
+};
+const pendingQuickAction = new URLSearchParams(window.location.search).get('quickadd');
+
+function runPendingQuickAction() {
+  if (!pendingQuickAction) return;
+  const action = QUICKADD_MAP[pendingQuickAction];
+  // Strip the param from the URL so a later refresh doesn't reopen it.
+  history.replaceState(null, '', window.location.pathname);
+  if (!action) return;
+  switchTab(action.tab);
+  openModal(action.modal);
+  setTimeout(() => document.getElementById(action.focus)?.focus(), 150);
+}
+
+// ══════════════════════════════════════════
 // GOOGLE SHEETS API
 // ══════════════════════════════════════════
 function setSyncState(state, msg) {
@@ -1501,6 +1529,7 @@ async function initApp() {
   await loadAllData();
   checkAutoNotifications();
   renderAll();
+  runPendingQuickAction();
 }
 
 function renderAll() {
